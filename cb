@@ -614,12 +614,8 @@ function Utility.CheckPlayer(v:Instance)
 end
 
 function Utility.Combat.RegisterHit(HitPart:Instance, position:Vector3, gun:string, damageModifier:number, wallbang:boolean,customicon:string)
-    task.spawn(function()RS.Events.HitPart:FireServer(HitPart,Vector3.new(0,0/0,0),gun,8192,lp.Character and Utility.FindChild(lp.Character,'Gun'),nil,damageModifier,wallbang,wallbang,Vector3.zero,ws.DistributedTime.Value,Vector3.zero,false,nil,nil,nil,nil,nil ,nil,nil,nil,nil,nil ,nil,nil)end)
+    RS.Events.HitPart:FireServer(HitPart,Vector3.new(0,0/0,0),gun,8192,lp.Character and Utility.FindChild(lp.Character,'Gun'),nil,damageModifier,wallbang,wallbang,Vector3.zero,ws.DistributedTime.Value,Vector3.zero,false,nil,nil,nil,nil,nil ,nil,nil,nil,nil,nil ,nil,nil)
     if customicon then task.spawn(function()RS.Events.HitPart:FireServer(HitPart,Vector3.new(0,0/0,0),customicon,8192,lp.Character and Utility.FindChild(lp.Character,'Gun'),nil,damageModifier,wallbang,wallbang,Vector3.zero,ws.DistributedTime.Value,Vector3.zero,false,nil,nil,nil,nil,nil ,nil,nil,nil,nil,nil ,nil,nil)end) end
-    if flags['hitsound'] then Utility.Misc.PlayAudio(((not flags['custom sound'] and 'rbxassetid://'..SoundTBL[flags.sound_type])) or CustomSoundID,flags['vol']) end
-    Utility.Misc.HitMarker(position)
-    if flags['kill all'] then return end
-    Utility.Misc.CreateNewTracer(position)
 end
 
 function Utility.Misc.Viewmodel()
