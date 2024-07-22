@@ -1,0 +1,1125 @@
+--[[
+    @0f14
+    jinbohook.rip | counter blox build
+]]
+local Namecall,Index,ConfigList,CustomSoundID,ClientHook,SoundHook
+local client,ftfolder,FireRateTick = getsenv(game.Players.LocalPlayer.PlayerGui.Client),Instance.new('Folder',workspace),tick()
+local hookfunction,checkcaller,getnamecallmethod,writefile,readfile,delfile,listfiles,isfolder,Drawing,makefolder,Hidden,Service,LibraryOpen,Skyboxes,LightingProperties,HitPoints,RotationAngle,Tick,Lerp = getgenv().hookfunction,getgenv().checkcaller,getgenv().getnamecallmethod,getgenv().writefile,getgenv().readfile,getgenv().delfile,getgenv().listfiles,getgenv().isfolder,getgenv().Drawing,getgenv().makefolder,getgenv().gethui(),game.GetService,false,{['Purple Nebula'] = {['SkyboxBk'] = 'rbxassetid://159454299',['SkyboxDn'] = 'rbxassetid://159454296',['SkyboxFt'] = 'rbxassetid://159454293',['SkyboxLf'] = 'rbxassetid://159454286',['SkyboxRt'] = 'rbxassetid://159454300',['SkyboxUp'] = 'rbxassetid://159454288'},['Night Sky'] = {['SkyboxBk'] = 'rbxassetid://12064107',['SkyboxDn'] = 'rbxassetid://12064152',['SkyboxFt'] = 'rbxassetid://12064121',['SkyboxLf'] = 'rbxassetid://12063984',['SkyboxRt'] = 'rbxassetid://12064115',['SkyboxUp'] = 'rbxassetid://12064131'},['Pink Daylight'] = {['SkyboxBk'] = 'rbxassetid://271042516',['SkyboxDn'] = 'rbxassetid://271077243',['SkyboxFt'] = 'rbxassetid://271042556',['SkyboxLf'] = 'rbxassetid://271042310',['SkyboxRt'] = 'rbxassetid://271042467',['SkyboxUp'] = 'rbxassetid://271077958'},['Setting Sun'] = {['SkyboxBk'] = 'rbxassetid://626460377',['SkyboxDn'] = 'rbxassetid://626460216',['SkyboxFt'] = 'rbxassetid://626460513',['SkyboxLf'] = 'rbxassetid://626473032',['SkyboxRt'] = 'rbxassetid://626458639',['SkyboxUp'] = 'rbxassetid://626460625'},['Fade Blue'] = {['SkyboxBk'] = 'rbxassetid://153695414',['SkyboxDn'] = 'rbxassetid://153695352',['SkyboxFt'] = 'rbxassetid://153695452',['SkyboxLf'] = 'rbxassetid://153695320',['SkyboxRt'] = 'rbxassetid://153695383',['SkyboxUp'] = 'rbxassetid://153695471'},['Elegant Morning'] = {['SkyboxBk'] = 'rbxassetid://153767241',['SkyboxDn'] = 'rbxassetid://153767216',['SkyboxFt'] = 'rbxassetid://153767266',['SkyboxLf'] = 'rbxassetid://153767200',['SkyboxRt'] = 'rbxassetid://153767231',['SkyboxUp'] = 'rbxassetid://153767288'}},{'FogEnd','Ambient','FogColor','ClockTime','Brightness','OutdoorAmbient','ExposureCompensation'},{'Head','HumanoidRootPart',--[[R6/R15]]'UpperTorso','LowerTorso','RightUpperArm','RightLowerArm','LeftUpperArm','LeftLowerArm','RightUpperLeg','RightLowerLeg','LeftUpperLeg','LeftLowerLeg',--[[R15]]'Torso','Right Leg','Right Arm','Left Arm','Left Leg'--[[R6]]},0,tick(),Color3.new().Lerp
+local ForceFieldTextures,SoundTBL = {['Artifact Energy'] = 'rbxassetid://4504367541',['Flaming Plasma'] = 'rbxassetid://2060292619',['Lightning Cast'] = 'rbxassetid://123111500',['Blast Shield'] = 'rbxassetid://49942836',['Alien Field'] = 'rbxassetid://2930247814',['Antimatter'] = 'rbxassetid://4494641460',['Hologram'] = 'rbxassetid://1478668577',['Mayhem'] = 'rbxassetid://459487304',['Mesmer'] = 'rbxassetid://459487304',},{['skeet'] = '5633695679',['baimware'] = '3124331820',['rust'] = '1255040462',['sit'] = '5902468562'}
+local ls,plrs,ws,rs,ts,RS,uis = Service(game,'Lighting'),Service(game,'Players'),Service(game,'Workspace'),Service(game,'RunService'),Service(game,'TweenService'),Service(game,'ReplicatedStorage'),Service(game,'UserInputService')
+local lp,camera = plrs.LocalPlayer,ws.CurrentCamera
+
+if (not isfolder('Northern')) or (not isfolder('Northern/Counter Blox')) or (not isfolder('Northern/Counter Blox/asset')) or (not isfolder('Northern/hit sounds')) or not isfolder("Northern/Counter Blox/configs") then
+    makefolder('Northern')
+    makefolder('Northern/Counter Blox')
+    makefolder('Northern/Counter Blox/asset')
+    makefolder("Northern/Counter Blox/configs")
+    makefolder('Northern/hit sounds')
+end
+
+Library,flags = loadstring(game:HttpGet'https://raw.githubusercontent.com/uq6/uq6/main/ui')()task.wait()flags=Library['Flags']
+
+----------------------------------------------[Settings & Cache]------------------------------------------------------------------
+
+local Utility = {
+    Desync = {
+        Angle = 0,
+        OldCFrame = nil,
+        OldVelocity = nil,
+        Desyncing = false,
+        Frames = {}
+    },
+    Combat = {},
+    Misc = {},
+    Movement = {},
+    ESP = {
+        Rainbow = false,
+        RainbowSpeed = 5,
+        Font = Library.Font,
+        Teammates = {
+            Enabled = false,
+            TextSize = 13,
+            MaxDistance = 1000,
+            FriendcheckRGB = Color3.new(0.549019, 1, 0.623529),
+            VisibleCheck = false, VisibleCheckRGB = Color3.new(0.980392, 0.388235, 0.388235), VisibleCheckDistance = 3000,
+            Chams = {
+                Enabled = false,
+                FillRGB = Color3.fromRGB(255, 255, 255),
+                Fill_Transparency = 1,
+                OutlineRGB = Color3.fromRGB(255, 255, 255),
+                Outline_Transparency = 1,
+                VisibleCheck = false,
+            },
+            Names = {
+                Enabled = false,
+                Animate = true,
+                Rainbow = false,
+                RGB = Color3.fromRGB(255, 255, 255),Gradient1 = Color3.new(),Gradient2 = Color3.new()
+            },
+            Flags = {
+                Enabled = false,
+            },
+            Distances = {
+                Enabled = false,
+                Animate = true,
+                Rainbow = false,
+                Position = "Text",
+                RGB = Color3.fromRGB(255, 255, 255),Gradient1 = Color3.new(),Gradient2 = Color3.new()
+            },
+            Weapons = {
+                Animate = true,
+                Rainbow = false,
+                Enabled = false, WeaponTextRGB = Color3.fromRGB(255, 255, 255),
+                Outlined = true,Gradient1 = Color3.new(),Gradient2 = Color3.new()
+            },
+            Healthbar = {
+                Enabled = false,
+                Rainbow = false,
+                RainbowText = false,
+                HealthTextGradient1 = Color3.new(),
+                HealthTextGradient2 = Color3.new(),
+                HealthText = false, Lerp = false,RGB = Color3.new(1,1,1),HealthyColor = Color3.new(0,1,0),DyingColor = Color3.new(1,0,0), HealthTextRGB = Color3.fromRGB(255, 255, 255),
+                Width = 2,
+                Gradient = true, GradientRGB1 = Color3.fromRGB(0, 0, 0), GradientRGB2 = Color3.fromRGB(112, 112, 112), GradientRGB3 = Color3.fromRGB(255, 255, 255), 
+            },
+            Boxes = {
+                Size = 0.2,
+                Animate = true,
+                Rainbow = false,
+                FullBox = false,
+                RotationSpeed = 300,
+                Gradient = true, GradientRGB1 = Color3.fromRGB(255, 255, 255), GradientRGB2 = Color3.fromRGB(0, 0, 0), 
+                GradientFillRGB1 = Color3.fromRGB(255, 255, 255), GradientFillRGB2 = Color3.fromRGB(0, 0, 0),
+                Filled = {Enabled = false, Transparency = 0, RGB = Color3.fromRGB(0, 0, 0)},
+            },
+        },
+        Enemies = {
+            Enabled = false,
+            TextSize = 13,
+            MaxDistance = 1000,
+            FriendcheckRGB = Color3.new(0.549019, 1, 0.623529),
+            VisibleCheck = false, VisibleCheckRGB = Color3.new(0.980392, 0.388235, 0.388235), VisibleCheckDistance = 3000,
+            Chams = {
+                Enabled = false,
+                FillRGB = Color3.fromRGB(255, 255, 255),
+                Fill_Transparency = 1,
+                OutlineRGB = Color3.fromRGB(255, 255, 255),
+                Outline_Transparency = 1,
+                VisibleCheck = false,
+            },
+            Names = {
+                Enabled = false,
+                Animate = true,
+                Rainbow = false,
+                RGB = Color3.fromRGB(255, 255, 255),Gradient1 = Color3.new(),Gradient2 = Color3.new()
+            },
+            Flags = {
+                Enabled = false,
+            },
+            Distances = {
+                Enabled = false,
+                Animate = true,
+                Rainbow = false,
+                Position = "Text",
+                RGB = Color3.fromRGB(255, 255, 255),Gradient1 = Color3.new(),Gradient2 = Color3.new()
+            },
+            Weapons = {
+                Animate = true,
+                Rainbow = false,
+                Enabled = false, WeaponTextRGB = Color3.fromRGB(255, 255, 255),
+                Outlined = true,Gradient1 = Color3.new(),Gradient2 = Color3.new()
+            },
+            Healthbar = {
+                Enabled = false,
+                Rainbow = false,
+                RainbowText = false,
+                HealthTextGradient1 = Color3.new(),
+                HealthTextGradient2 = Color3.new(),
+                HealthText = false, Lerp = false,RGB = Color3.new(1,1,1),HealthyColor = Color3.new(0,1,0),DyingColor = Color3.new(1,0,0), HealthTextRGB = Color3.fromRGB(255, 255, 255),
+                Width = 2,
+                Gradient = true, GradientRGB1 = Color3.fromRGB(0, 0, 0), GradientRGB2 = Color3.fromRGB(112, 112, 112), GradientRGB3 = Color3.fromRGB(255, 255, 255), 
+            },
+            Boxes = {
+                Size = 0.2,
+                Animate = true,
+                Rainbow = false,
+                FullBox = false,
+                RotationSpeed = 300,
+                Gradient = true, GradientRGB1 = Color3.fromRGB(255, 255, 255), GradientRGB2 = Color3.fromRGB(0, 0, 0), 
+                GradientFillRGB1 = Color3.fromRGB(255, 255, 255), GradientFillRGB2 = Color3.fromRGB(0, 0, 0),
+                Filled = {Enabled = false, Transparency = 0, RGB = Color3.fromRGB(0, 0, 0)},
+            },
+        },
+        LocalPlayer = {
+            Enabled = false,
+            TextSize = 13,
+            MaxDistance = 1000,
+            FriendcheckRGB = Color3.new(0.549019, 1, 0.623529),
+            VisibleCheck = false, VisibleCheckRGB = Color3.new(0.980392, 0.388235, 0.388235), VisibleCheckDistance = 3000,
+            Chams = {
+                Enabled = false,
+                FillRGB = Color3.fromRGB(255, 255, 255),
+                Fill_Transparency = 1,
+                OutlineRGB = Color3.fromRGB(255, 255, 255),
+                Outline_Transparency = 1,
+                VisibleCheck = false,
+            },
+            Names = {
+                Enabled = false,
+                Animate = true,
+                Rainbow = false,
+                RGB = Color3.fromRGB(255, 255, 255),Gradient1 = Color3.new(),Gradient2 = Color3.new()
+            },
+            Flags = {
+                Enabled = false,
+            },
+            Distances = {
+                Enabled = false,
+                Animate = true,
+                Rainbow = false,
+                Position = "Text",
+                RGB = Color3.fromRGB(255, 255, 255),Gradient1 = Color3.new(),Gradient2 = Color3.new()
+            },
+            Weapons = {
+                Animate = true,
+                Rainbow = false,
+                Enabled = false, WeaponTextRGB = Color3.fromRGB(255, 255, 255),
+                Outlined = true,Gradient1 = Color3.new(),Gradient2 = Color3.new()
+            },
+            Healthbar = {
+                Enabled = false,
+                Rainbow = false,
+                RainbowText = false,
+                HealthTextGradient1 = Color3.new(),
+                HealthTextGradient2 = Color3.new(),
+                HealthText = false, Lerp = false,RGB = Color3.new(1,1,1),HealthyColor = Color3.new(0,1,0),DyingColor = Color3.new(1,0,0), HealthTextRGB = Color3.fromRGB(255, 255, 255),
+                Width = 2,
+                Gradient = true, GradientRGB1 = Color3.fromRGB(0, 0, 0), GradientRGB2 = Color3.fromRGB(112, 112, 112), GradientRGB3 = Color3.fromRGB(255, 255, 255), 
+            },
+            Boxes = {
+                Size = 0.2,
+                Animate = true,
+                Rainbow = false,
+                FullBox = false,
+                RotationSpeed = 300,
+                Gradient = true, GradientRGB1 = Color3.fromRGB(255, 255, 255), GradientRGB2 = Color3.fromRGB(0, 0, 0), 
+                GradientFillRGB1 = Color3.fromRGB(255, 255, 255), GradientFillRGB2 = Color3.fromRGB(0, 0, 0),
+                Filled = {Enabled = false, Transparency = 0, RGB = Color3.fromRGB(0, 0, 0)},
+            },
+        },
+        Players = {},
+        Connections = {RunService = rs}
+    }
+}
+
+function Utility.UpdateConfigList()
+    local List = {}
+    for _,file in ipairs(listfiles('Northern/'..tostring(game.PlaceId)..'/configs')) do
+        List[#List + 1] = file:gsub('Northern/'..tostring(game.PlaceId)..'/configs\\',''):gsub('\\',''):gsub('/',''):gsub('.cfg','')
+    end
+    ConfigList:Refresh(List)
+end
+
+function Utility.ESP.UpdateVisual()
+    task.spawn(pcall,function()
+        Utility.ESP.Rainbow = flags['rainbow']
+        Utility.ESP.RainbowSpeed = flags['rainbow speed']
+        Utility.ESP.Enemies.Enabled = flags['esp enable']
+        Utility.ESP.LocalPlayer.Enabled = flags['lp enable']
+        Utility.ESP.Teammates.Enabled = flags['team enable']
+        if flags['esp enable'] then
+            Utility.ESP.Enemies.Boxes.FullBox = flags['esp box']
+            Utility.ESP.Enemies.Names.Enabled = flags['esp name']
+            Utility.ESP.Enemies.Chams.Enabled = flags['esp chams']
+            Utility.ESP.Enemies.Healthbar.Enabled = flags['esp hp']
+            Utility.ESP.Enemies.Distances.Enabled = flags['esp dist']
+            Utility.ESP.Enemies.VisibleCheck = flags['vis enabled']
+            Utility.ESP.Enemies.VisibleCheckRGB = flags['esp viscolor'].Color
+            Utility.ESP.Enemies.TextSize = flags['esp txtsize']
+            Utility.ESP.Enemies.VisibleCheckDistance = flags['esp vdist']
+            Utility.ESP.Enemies.Healthbar.HealthText = flags['esp hptxt']
+            Utility.ESP.Enemies.Boxes.Size = flags['box size']
+            Utility.ESP.Enemies.MaxDistance = flags['esp maxdist']
+            Utility.ESP.Enemies.Healthbar.Width = flags['esp hp size']
+            Utility.ESP.Enemies.Friendcheck = flags['esp wl']
+            Utility.ESP.Enemies.Weapons.Enabled = flags['esp weapon']
+            Utility.ESP.Enemies.Weapons.Gradient1 = flags['esp weaponcolor'].Color
+            Utility.ESP.Enemies.Weapons.Gradient2 = flags['esp weaponcolor2'].Color
+            Utility.ESP.Enemies.FriendcheckRGB = flags['esp wlcolor'].Color
+            Utility.ESP.Enemies.Healthbar.DyingColor = flags['hp color2'].Color
+            Utility.ESP.Enemies.Healthbar.HealthyColor = flags['hp color1'].Color
+            Utility.ESP.Enemies.Names.Gradient1 = flags['esp namecolor'].Color
+            Utility.ESP.Enemies.Names.Gradient2 = flags['esp namecolor2'].Color
+            Utility.ESP.Enemies.Distances.Gradient1 = flags['esp distcolor'].Color
+            Utility.ESP.Enemies.Distances.Gradient2 = flags['esp distcolor2'].Color
+            Utility.ESP.Enemies.Healthbar.HealthTextGradient1 = flags['esp hptxtcolor'].Color
+            Utility.ESP.Enemies.Healthbar.HealthTextGradient2 = flags['esp hptxtcolor2'].Color
+            Utility.ESP.Enemies.Healthbar.RGB = flags['bar color'].Color
+            Utility.ESP.Enemies.Chams.FillRGB = flags['chams fill color'].Color
+            Utility.ESP.Enemies.Chams.OutlineRGB = flags['chams out color '].Color
+            Utility.ESP.Enemies.Healthbar.GradientRGB1 = flags['hp grad color'].Color
+            Utility.ESP.Enemies.Healthbar.GradientRGB2 = flags['hp grad color2'].Color
+            Utility.ESP.Enemies.Healthbar.GradientRGB3 = flags['hp grad color3'].Color
+            Utility.ESP.Enemies.Boxes.Filled.Enabled = table.find(flags['esp sets'],'Filled Box')
+            Utility.ESP.Enemies.Boxes.Filled.RGB = flags['esp box fill color'].Color
+            Utility.ESP.Enemies.Boxes.GradientRGB1 = flags['esp box grad1'].Color
+            Utility.ESP.Enemies.Boxes.GradientRGB2 = flags['esp box grad2'].Color
+            Utility.ESP.Enemies.Boxes.Filled.Transparency = flags['esp box fill color'].Transparency
+            Utility.ESP.Enemies.Chams.Outline_Transparency = flags['chams out color '].Transparency
+            Utility.ESP.Enemies.Chams.Fill_Transparency = flags['chams fill color'].Transparency
+            --Utility.ESP.Enemies.teamColor = table.find(flags['esp sets'],'Use Team Color')
+            Utility.ESP.Enemies.Healthbar.Gradient = table.find(flags['esp sets'],'Healthbar Gradient')
+            Utility.ESP.Enemies.Healthbar.Rainbow = flags['rainbow'] and table.find(flags['esp sets'],'Rainbow Healthbar')
+            Utility.ESP.Enemies.Healthbar.Lerp = table.find(flags['esp sets'],'Health Lerp')
+            Utility.ESP.Enemies.Boxes.Animate = table.find(flags['esp sets'],'Box Animation')
+            Utility.ESP.Enemies.Boxes.Rainbow = flags['rainbow'] and table.find(flags['esp sets'],'Rainbow Box')
+            Utility.ESP.Enemies.Names.Animate = table.find(flags['esp sets'],'Name Animation')
+            Utility.ESP.Enemies.Distances.Animate = table.find(flags['esp sets'],'Distance Animation')
+            Utility.ESP.Enemies.Weapons.Animate = table.find(flags['esp sets'],'Weapon Animation')
+            Utility.ESP.Enemies.Healthbar.Animate = table.find(flags['esp sets'],'Health Text Animation')
+            Utility.ESP.Enemies.Healthbar.RainbowText = flags['rainbow'] and table.find(flags['esp sets'],'Rainbow Health Text')
+            Utility.ESP.Enemies.Names.Rainbow = flags['rainbow'] and table.find(flags['esp sets'],'Rainbow Name')
+            Utility.ESP.Enemies.Weapons.Rainbow = flags['rainbow'] and table.find(flags['esp sets'],'Rainbow Weapon')
+            Utility.ESP.Enemies.Distances.Rainbow = flags['rainbow'] and table.find(flags['esp sets'],'Rainbow Distance')
+            --Utility.ESP.Enemies.autoTextSize = table.find(flags['esp sets'])
+        end
+        if flags['lp enable'] then
+            Utility.ESP.LocalPlayer.Boxes.FullBox = flags['lp box']
+            Utility.ESP.LocalPlayer.Names.Enabled = flags['lp name']
+            Utility.ESP.LocalPlayer.Chams.Enabled = flags['lp chams']
+            Utility.ESP.LocalPlayer.Healthbar.Enabled = flags['lp hp']
+            Utility.ESP.LocalPlayer.Distances.Enabled = flags['lp dist']
+            Utility.ESP.LocalPlayer.VisibleCheck = flags['lp vis enabled']
+            Utility.ESP.LocalPlayer.VisibleCheckRGB = flags['lp viscolor'].Color
+            Utility.ESP.LocalPlayer.TextSize = flags['lp txtsize']
+            Utility.ESP.LocalPlayer.VisibleCheckDistance = flags['lp vdist']
+            Utility.ESP.LocalPlayer.Healthbar.HealthText = flags['lp hptxt']
+            Utility.ESP.LocalPlayer.Boxes.Size = flags['lp box size']
+            Utility.ESP.LocalPlayer.MaxDistance = flags['lp maxdist']
+            Utility.ESP.LocalPlayer.Healthbar.Width = flags['lp hp size']
+            Utility.ESP.LocalPlayer.Friendcheck = flags['lp wl']
+            Utility.ESP.LocalPlayer.Weapons.Enabled = flags['lp weapon']
+            Utility.ESP.LocalPlayer.Weapons.Gradient1 = flags['lp weaponcolor'].Color
+            Utility.ESP.LocalPlayer.Weapons.Gradient2 = flags['lp weaponcolor2'].Color
+            Utility.ESP.LocalPlayer.FriendcheckRGB = flags['lp wlcolor'].Color
+            Utility.ESP.LocalPlayer.Healthbar.DyingColor = flags['lp hp color2'].Color
+            Utility.ESP.LocalPlayer.Healthbar.HealthyColor = flags['lp hp color1'].Color
+            Utility.ESP.LocalPlayer.Names.Gradient1 = flags['lp namecolor'].Color
+            Utility.ESP.LocalPlayer.Names.Gradient2 = flags['lp namecolor2'].Color
+            Utility.ESP.LocalPlayer.Distances.Gradient1 = flags['lp distcolor'].Color
+            Utility.ESP.LocalPlayer.Distances.Gradient2 = flags['lp distcolor2'].Color
+            Utility.ESP.LocalPlayer.Healthbar.HealthTextGradient1 = flags['lp hptxtcolor'].Color
+            Utility.ESP.LocalPlayer.Healthbar.HealthTextGradient2 = flags['lp hptxtcolor2'].Color
+            Utility.ESP.LocalPlayer.Healthbar.RGB = flags['lp bar color'].Color
+            Utility.ESP.LocalPlayer.Chams.FillRGB = flags['lp chams fill color'].Color
+            Utility.ESP.LocalPlayer.Chams.OutlineRGB = flags['lp chams out color '].Color
+            Utility.ESP.LocalPlayer.Healthbar.GradientRGB1 = flags['lp hp grad color'].Color
+            Utility.ESP.LocalPlayer.Healthbar.GradientRGB2 = flags['lp hp grad color2'].Color
+            Utility.ESP.LocalPlayer.Healthbar.GradientRGB3 = flags['lp hp grad color3'].Color
+            Utility.ESP.LocalPlayer.Boxes.Filled.Enabled = table.find(flags['lp sets'],'Filled Box')
+            Utility.ESP.LocalPlayer.Boxes.Filled.RGB = flags['lp box fill color'].Color
+            Utility.ESP.LocalPlayer.Boxes.GradientRGB1 = flags['lp box grad1'].Color
+            Utility.ESP.LocalPlayer.Boxes.GradientRGB2 = flags['lp box grad2'].Color
+            Utility.ESP.LocalPlayer.Boxes.Filled.Transparency = flags['lp box fill color'].Transparency
+            Utility.ESP.LocalPlayer.Chams.Outline_Transparency = flags['lp chams out color '].Transparency
+            Utility.ESP.LocalPlayer.Chams.Fill_Transparency = flags['lp chams fill color'].Transparency
+            --Utility.ESP.LocalPlayer.teamColor = table.find(flags['lp sets'],'Use Team Color')
+            Utility.ESP.LocalPlayer.Healthbar.Gradient = table.find(flags['lp sets'],'Healthbar Gradient')
+            Utility.ESP.LocalPlayer.Healthbar.Lerp = table.find(flags['lp sets'],'Health Lerp')
+            Utility.ESP.LocalPlayer.Boxes.Animate = table.find(flags['lp sets'],'Box Animation')
+            Utility.ESP.LocalPlayer.Names.Animate = table.find(flags['lp sets'],'Name Animation')
+            Utility.ESP.LocalPlayer.Distances.Animate = table.find(flags['lp sets'],'Distance Animation')
+            Utility.ESP.LocalPlayer.Weapons.Animate = table.find(flags['lp sets'],'Weapon Animation')
+            Utility.ESP.LocalPlayer.Healthbar.Animate = table.find(flags['lp sets'],'Health Text Animation')
+            Utility.ESP.LocalPlayer.Healthbar.Rainbow = flags['rainbow'] and table.find(flags['lp sets'],'Rainbow Healthbar')
+            Utility.ESP.LocalPlayer.Boxes.Rainbow = flags['rainbow'] and table.find(flags['lp sets'],'Rainbow Box')
+            Utility.ESP.LocalPlayer.Healthbar.RainbowText = flags['rainbow'] and table.find(flags['lp sets'],'Rainbow Health Text')
+            Utility.ESP.LocalPlayer.Names.Rainbow = flags['rainbow'] and table.find(flags['lp sets'],'Rainbow Name')
+            Utility.ESP.LocalPlayer.Weapons.Rainbow = flags['rainbow'] and table.find(flags['lp sets'],'Rainbow Weapon')
+            Utility.ESP.LocalPlayer.Distances.Rainbow = flags['rainbow'] and table.find(flags['lp sets'],'Rainbow Distance')
+            --Utility.ESP.LocalPlayer.autoTextSize = table.find(flags['lp sets'])
+        end
+        if flags['team enable'] then
+            Utility.ESP.Teammates.Boxes.FullBox = flags['team box']
+            Utility.ESP.Teammates.Names.Enabled = flags['team name']
+            Utility.ESP.Teammates.Chams.Enabled = flags['team chams']
+            Utility.ESP.Teammates.Healthbar.Enabled = flags['team hp']
+            Utility.ESP.Teammates.Distances.Enabled = flags['team dist']
+            Utility.ESP.Teammates.VisibleCheck = flags['team vis enabled']
+            Utility.ESP.Teammates.VisibleCheckRGB = flags['team viscolor'].Color
+            Utility.ESP.Teammates.TextSize = flags['team txtsize']
+            Utility.ESP.Teammates.VisibleCheckDistance = flags['team vdist']
+            Utility.ESP.Teammates.Healthbar.HealthText = flags['team hptxt']
+            Utility.ESP.Teammates.Boxes.Size = flags['team box size']
+            Utility.ESP.Teammates.MaxDistance = flags['team maxdist']
+            Utility.ESP.Teammates.Healthbar.Width = flags['team hp size']
+            Utility.ESP.Teammates.Friendcheck = flags['team wl']
+            Utility.ESP.Teammates.Weapons.Enabled = flags['team weapon']
+            Utility.ESP.Teammates.Weapons.Gradient1 = flags['team weaponcolor'].Color
+            Utility.ESP.Teammates.Weapons.Gradient2 = flags['team weaponcolor2'].Color
+            Utility.ESP.Teammates.FriendcheckRGB = flags['team wlcolor'].Color
+            Utility.ESP.Teammates.Healthbar.DyingColor = flags['team hp color2'].Color
+            Utility.ESP.Teammates.Healthbar.HealthyColor = flags['team hp color1'].Color
+            Utility.ESP.Teammates.Names.Gradient1 = flags['team namecolor'].Color
+            Utility.ESP.Teammates.Names.Gradient2 = flags['team namecolor2'].Color
+            Utility.ESP.Teammates.Distances.Gradient1 = flags['team distcolor'].Color
+            Utility.ESP.Teammates.Distances.Gradient2 = flags['team distcolor2'].Color
+            Utility.ESP.Teammates.Healthbar.HealthTextGradient1 = flags['team hptxtcolor'].Color
+            Utility.ESP.Teammates.Healthbar.HealthTextGradient2 = flags['team hptxtcolor2'].Color
+            Utility.ESP.Teammates.Healthbar.RGB = flags['team bar color'].Color
+            Utility.ESP.Teammates.Chams.FillRGB = flags['team chams fill color'].Color
+            Utility.ESP.Teammates.Chams.OutlineRGB = flags['team chams out color '].Color
+            Utility.ESP.Teammates.Healthbar.GradientRGB1 = flags['team hp grad color'].Color
+            Utility.ESP.Teammates.Healthbar.GradientRGB2 = flags['team hp grad color2'].Color
+            Utility.ESP.Teammates.Healthbar.GradientRGB3 = flags['team hp grad color3'].Color
+            Utility.ESP.Teammates.Boxes.Filled.Enabled = table.find(flags['team sets'],'Filled Box')
+            Utility.ESP.Teammates.Boxes.Filled.RGB = flags['team box fill color'].Color
+            Utility.ESP.Teammates.Boxes.GradientRGB1 = flags['team box grad1'].Color
+            Utility.ESP.Teammates.Boxes.GradientRGB2 = flags['team box grad2'].Color
+            Utility.ESP.Teammates.Boxes.Filled.Transparency = flags['team box fill color'].Transparency
+            Utility.ESP.Teammates.Chams.Outline_Transparency = flags['team chams out color '].Transparency
+            Utility.ESP.Teammates.Chams.Fill_Transparency = flags['team chams fill color'].Transparency
+            --Utility.ESP.Teammates.teamColor = table.find(flags['team sets'],'Use Team Color')
+            Utility.ESP.Teammates.Healthbar.Gradient = table.find(flags['team sets'],'Healthbar Gradient')
+            Utility.ESP.Teammates.Healthbar.Lerp = table.find(flags['team sets'],'Health Lerp')
+            Utility.ESP.Teammates.Boxes.Animate = table.find(flags['team sets'],'Box Animation')
+            Utility.ESP.Teammates.Healthbar.Rainbow = flags['rainbow'] and table.find(flags['team sets'],'Rainbow Healthbar')
+            Utility.ESP.Teammates.Boxes.Rainbow = flags['rainbow'] and table.find(flags['team sets'],'Rainbow Box')
+            Utility.ESP.Teammates.Names.Animate = table.find(flags['team sets'],'Name Animation')
+            Utility.ESP.Teammates.Distances.Animate = table.find(flags['team sets'],'Distance Animation')
+            Utility.ESP.Teammates.Weapons.Animate = table.find(flags['team sets'],'Weapon Animation')
+            Utility.ESP.Teammates.Healthbar.Animate = table.find(flags['team sets'],'Health Text Animation')
+            Utility.ESP.Teammates.Healthbar.RainbowText = flags['rainbow'] and table.find(flags['team sets'],'Rainbow Health Text')
+            Utility.ESP.Teammates.Names.Rainbow = flags['rainbow'] and table.find(flags['team sets'],'Rainbow Name')
+            Utility.ESP.Teammates.Weapons.Rainbow = flags['rainbow'] and table.find(flags['team sets'],'Rainbow Weapon')
+            Utility.ESP.Teammates.Distances.Rainbow = flags['rainbow'] and table.find(flags['team sets'],'Rainbow Distance')
+            --Utility.ESP.Teammates.autoTextSize = table.find(flags['team sets'])
+        end
+    end)
+end
+
+local window = Library:Window{Size = UDim2.new(0,750,0,800)}
+local page = {a=window:Page({Name = 'Rage',Weapons = true}),b=window:Page({Name = 'Visual',Weapons = true}),d=window:Page({Name = 'Movement',Weapons = false}),e=window:Page({Name = 'Settings',Weapons = false})}
+local Tab1,Tab2,____,Tab3,Tab4 = page.a,page.b,nil,page.d,page.e
+local combat,aa,misc = Tab1:Weapon({Icon = "rbxassetid://17344002320"}),Tab1:Weapon({Icon = "rbxassetid://17344023559"}),Tab1:Weapon({Icon = "rbxassetid://8733216068"})
+local rm = misc:Section{Name = ('Misc')}
+local r = combat:Section{Name = 'Combat'}
+
+r:Toggle{Name = "Kill All Niggers",risky = true,flag = "kill all"}
+r:Toggle{Name = "Custom Kill All Weapon",risky = true,flag = "use ci"}
+r:Dropdown{Name = "Custom Weapon",Options = {'C4','Molotov','Smoke Grenade','Decoy Grenade','HE Grenade','Incendiary Grenade'},flag = "ci",Default = 'C4'}
+
+rm:Toggle{Name = "Auto Vote",flag = "vote"}
+rm:Button{Name = "Plant C4",callback = function()task.spawn(function()local oldcf = lp.Character.HumanoidRootPart.CFrame for _ = 0,5 do getgenv().planting = true task.spawn(function()lp.Character.HumanoidRootPart.CFrame = ws.Map.SpawnPoints.C4Plant.CFrame end) task.spawn(function()lp.Character.HumanoidRootPart.CFrame = ws.Map.SpawnPoints.C4Plant2.CFrame end) task.wait(1/30) RS.Events.PlantC4:FireServer("B")RS.Events.PlantC4:FireServer("A")RS.Events.PlantC4:FireServer("B")RS.Events.PlantC4:FireServer("A")end lp.Character.HumanoidRootPart.CFrame = oldcf end) end}
+rm:Button{Name = "Defuse C4",callback = function()task.spawn(function()local oldcf2 = lp.Character.HumanoidRootPart.CFrame if ws.C4 then for _ = 0,5 do task.spawn(function()lp.Character.HumanoidRootPart.CFrame = ws.Map.SpawnPoints.C4Plant.CFrame end) task.spawn(function()lp.Character.HumanoidRootPart.CFrame = ws.Map.SpawnPoints.C4Plant2.CFrame end) task.wait(.002)RS.Events.PressDefuse:FireServer(ws.C4)task.wait(.002)RS.Events.Defuse:FireServer(ws.C4)end lp.Character.HumanoidRootPart.CFrame = oldcf2 end end) end}
+
+local mv2 = aa:Section{Name = 'Desync',Side = 'Right'}
+mv2:Toggle{Name = 'Desync',risky = true,flag = 'desync'}:Keybind{Mode = 'Toggle',Name = 'Desync',flag = 'desync bind'}
+mv2:Toggle{Name = 'Velocity',risky = true,flag = 'velocity desync'}
+mv2:Toggle{Name = 'At Target',risky = true,flag = 'at target'}
+mv2:Dropdown{Name = 'Angle Mode',Options = {'Manual','Random','Spin'},Default = 'Manual',flag = 'desync angle'}
+mv2:Dropdown{Name = 'Desync Mode',Options = {'Manual','Random','Invisible'},Default = 'Manual',flag = 'desync mode'}
+mv2:Dropdown{Name = 'Spin Angles',Options = {'X','Y','Z'},Default = {'Y'},max=3,flag = 'spin angle'}
+mv2:Slider{default = 0,Name = 'Spin Speed',state = 0,min = 0,max = 500,Decimals = 1,flag = 'desync spin speed'}
+mv2:Slider{default = 0,Name = 'Tick',state = 0,min = 0,max = 100,Decimals = 1,flag = 'desync tick'}
+mv2:Slider{default = 0,Name = 'Angle X',state = 0,min = 0,max = 180,Decimals = 1,flag = 'a x'}
+mv2:Slider{default = 0,Name = 'Angle Y',state = 0,min = 0,max = 180,Decimals = 1,flag = 'a y'}
+mv2:Slider{default = 0,Name = 'Angle Z',state = 0,min = 0,max = 180,Decimals = 1,flag = 'a z'}
+mv2:Slider{default = 0,Name = 'Manual X',state = 0,min = -100,max = 100,Decimals = 1,flag = 'm x'}
+mv2:Slider{default = 0,Name = 'Manual Y',state = 0,min = -100,max = 100,Decimals = 1,flag = 'm y'}
+mv2:Slider{default = 0,Name = 'Manual Z',state = 0,min = -100,max = 100,Decimals = 1,flag = 'm z'}
+mv2:Slider{default = 0,Name = 'Random Min X',state = 0,min = -500,max = 500,Decimals = 1,flag = 'min x'}
+mv2:Slider{default = 0,Name = 'Random Min Y',state = 0,min = -500,max = 500,Decimals = 1,flag = 'min y'}
+mv2:Slider{default = 0,Name = 'Random Min Z',state = 0,min = -500,max = 500,Decimals = 1,flag = 'min z'}
+mv2:Slider{default = 0,Name = 'Random Max X',state = 0,min = -500,max = 500,Decimals = 1,flag = 'max x'}
+mv2:Slider{default = 0,Name = 'Random Max Y',state = 0,min = -500,max = 500,Decimals = 1,flag = 'max y'}
+mv2:Slider{default = 0,Name = 'Random Max Z',state = 0,min = -500,max = 500,Decimals = 1,flag = 'max z'}
+
+
+local ESP,World,sficon,vmicon = Tab2:Weapon{Icon = 'rbxassetid://6034281935'},Tab2:Weapon{Icon = 'rbxassetid://17343962832'},Tab2:Weapon{Icon = 'rbxassetid://7992557358'},Tab2:Weapon({Icon = "rbxassetid://17343713939"})--local World = Tab2:Weapon{Icon = 'rbxassetid://16997762295'}
+local switch,espset,env,sf,sf2,sf4,sf3 = ESP:Section{Name = 'Switcher'},ESP:Section{Name = 'Global Settings'},World:Section{Name = 'Environment'},sficon:Section{Name = 'Self'},sficon:Section{Name = 'Bullet Redirection',Side = 'Right'},sficon:Section{Name = 'Aim-Assist',Side = 'Right'},sficon:Section{Name = 'Snapline',Side = 'Right'}
+local vm = vmicon:Section{Name = ('Viewmodel')}
+local vs = ESP:Section{Name = 'Enemies',Side = 'Right'}vs:SetVisible(false)
+local tm = ESP:Section{Name = 'Teammates',Side = 'Right'}tm:SetVisible(false)
+local cl = ESP:Section{Name = 'Client',Side = 'Right'}
+
+local vmtoggle = vm:Toggle{Name = "Enabled",flag = "vm"}vmtoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(255,147,147),nig = 'vm color',Name = "Gun Color",flag="vm color"}vmtoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(255,147,147),nig = 'arm color',Name = "Arm Color",flag="arm color"}
+vm:Toggle{Name = "No Accessories",flag = "no ac"}
+vm:Toggle{Name = "ForceField Animation",nig = 'ff anim',flag = "ff animation"}
+vm:Dropdown{Name = "ForceField Animation",Options = (function()local fat66666 = {} for i,_ in next,ForceFieldTextures do table.insert(fat66666,i) end return fat66666 end)(),Default = 'Mesmer',flag = "animation"}
+vm:Dropdown{Name = "Material",Options = {'ForceField',"Neon",'SmoothPlastic','Glass'},Default = 'ForceField',flag = "vm mater"}
+vm:Dropdown{Name = "Arm Material",Options = {'ForceField',"Neon",'SmoothPlastic','Glass'},Default = 'ForceField',flag = "arm mater"}
+vm:Slider{default = 0,Name = "X",state = 0,min = -20,max = 20,Decimals = .1,flag = "vm x"}
+vm:Slider{default = 0,Name = "Y",state = 0,min = -20,max = 20,Decimals = .1,flag = "vm y"}
+vm:Slider{default = 0,Name = "Z",state = 0,min = -20,max = 20,Decimals = .1,flag = "vm z"}
+vm:Slider{default = 0,Name = "Roll X",state = 0,min = -50,max = 50,Decimals = .5,flag = "vm roll x"}
+vm:Slider{default = 0,Name = "Roll Y",state = 0,min = -50,max = 50,Decimals = .5,flag = "vm roll y"}
+vm:Slider{default = 0,Name = "Roll Z",state = 0,min = -50,max = 50,Decimals = .5,flag = "vm roll z"}
+
+sf:Toggle{Name = "Third Person",flag = "thirdp"}:Keybind{Mode = 'Toggle',Name = 'Third Person',wtf = 'H',flag = 'third bind'}
+sf:Toggle{Name = "Annoying Sound (FE)",flag = "annoy"}
+local ds = sf:Toggle{Name = 'Visualize Desync',flag = 'desync visual'}ds:Colorpicker{alpha = 1,Default = Color3.new(0, 0, 0),Name = 'Desyn Outline Color',flag='desync o color'}ds:Colorpicker{alpha = .75,Default = Color3.new(1,1,1),Name = 'Desync Color',flag='desync color'}
+sf:Slider{default = camera.FieldOfView,Name = 'Field Of View',min = 1,max = 120,Decimals = 1,flag = 'cam fov',callback = function(v)camera.FieldOfView=v end}
+sf:Slider{default = 8,Name = "Distance",state = 8,min = 0.1,max = 30,Decimals = .5,flag = "third dist"}
+sf:Slider{default = 75,Name = "Field Of View",state = 75,min = 1,max = 120,Decimals = 1,flag = "cam fov",callback = function(v) camera.FieldOfView = v client.fieldofview = v end}
+switch:Dropdown{Name = 'ESP Switcher',Options = {'Enemy','Client','Teammates'},Default = 'Client',flag = 'esp sec',callback = function(sec)
+    vs:SetVisible(false)cl:SetVisible(false)tm:SetVisible(false)
+    print(sec)
+    if sec == 'Enemy' then vs:SetVisible(true) elseif sec == 'Client' then cl:SetVisible(true) else tm:SetVisible(true) end
+end}
+
+espset:Toggle{Name = 'Rainbow',flag = 'rainbow',callback = Utility.ESP.UpdateVisual}
+espset:Slider{default = 5,Name = 'Rainbow Speed',min = 1,max = 100,Decimals = 1,flag = 'rainbow speed',callback = Utility.ESP.UpdateVisual}
+
+env:Colorpicker{alpha = 0,Default = ls.Ambient,Name = 'Ambient',state = ls.Ambient,flag='w Ambient',callback = function(v) ls.Ambient = v end}
+env:Colorpicker{alpha = 0,Default = ls.FogColor,Name = 'Fog Color',state = ls.FogColor,flag='w FogColor',callback = function(v) ls.FogColor = v end}
+env:Colorpicker{alpha = 0,Default = ls.OutdoorAmbient,Name = 'Outdoor Ambient',state = ls.OutdoorAmbient,flag='w OutdoorAmbient',callback = function(v) ls.OutdoorAmbient = v end}
+env:Toggle{Name = 'Skybox',flag = 'world skybox',callback = function()
+    if (not flags['world skybox']) or (not flags['world skyboxtype']) then return end
+    Utility.Misc.UpdateSkybox(flags['world skyboxtype'])
+end}
+env:Dropdown{Name = 'Skybox',Options = {'Setting Sun','Fade Blue','Purple Nebula','Night Sky','Pink Daylight','Elegant Morning'},Default = 'Setting Sun',flag = 'world skyboxtype',callback = function()
+    if (not flags['world skybox']) or (not flags['world skyboxtype']) then return end
+    Utility.Misc.UpdateSkybox(flags['world skyboxtype'])
+end}
+env:Slider{default = ls.FogEnd,Name = 'Fog End',min = 0,max = 100000,Decimals = 10,flag = 'w FogEnd',callback = function(v) ls.FogEnd = v end}
+env:Slider{default = ls.ClockTime,Name = 'Clock Time',state = ls.ClockTime,min = 0,max = 24,Decimals = .05,flag = 'w ClockTime',callback = function(v) ls.ClockTime = v end}
+env:Slider{default = ls.Brightness,Name = 'Brightness',state = ls.Brightness,min = -50,max = 50,Decimals = .5,flag = 'w Brightness',callback = function(v) ls.Brightness = v end}
+env:Slider{default = ls.ExposureCompensation,Name = 'Exposure Compensation',state = ls.ExposureCompensation,min = -10,max = 10,Decimals = .05,flag = 'w ExposureCompensation',callback = function(v) ls.ExposureCompensation = v end}
+
+vs:Toggle{Name = 'Enabled',flag = 'esp enable',callback = Utility.ESP.UpdateVisual}
+local boxtoggle = vs:Toggle{Name = 'Boxes',flag = 'esp box',callback = Utility.ESP.UpdateVisual}boxtoggle:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Box Color',flag='esp boxcolor',callback = Utility.ESP.UpdateVisual}boxtoggle:Colorpicker{alpha = .7,Default = Color3.new(1, 1, 1),Name = 'Box Color',flag='esp box fill color',callback = Utility.ESP.UpdateVisual}boxtoggle:Colorpicker{alpha = 0,Default = Color3.new(1, 1, 1),Name = 'Box Color',flag='esp box grad1',callback = Utility.ESP.UpdateVisual}boxtoggle:Colorpicker{alpha = 0,Default = Color3.new(0, 0, 0),Name = 'Box Color',flag='esp box grad2',callback = Utility.ESP.UpdateVisual}
+local chamtog = vs:Toggle{Name = 'Chams',flag = 'esp chams',callback = Utility.ESP.UpdateVisual}chamtog:Colorpicker{alpha = .5,Default = Color3.fromRGB(255, 255, 255),Name = 'Chams Fill Color',flag='chams fill color',callback = Utility.ESP.UpdateVisual}chamtog:Colorpicker{alpha = 1,Default = Color3.new(1,1,1),Name = 'Chams outline Color',flag='chams out color ',callback = Utility.ESP.UpdateVisual}
+local nametog = vs:Toggle{Name = 'Names',flag = 'esp name',callback = Utility.ESP.UpdateVisual}nametog:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Name Color',flag='esp namecolor',callback = Utility.ESP.UpdateVisual}nametog:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Name Color',flag='esp namecolor2',callback = Utility.ESP.UpdateVisual}
+vs:Toggle{Name = 'Visible',flag = 'vis enabled',callback = Utility.ESP.UpdateVisual}:Colorpicker{alpha = 0,Default = Color3.new(1, 0.486274, 0.486274),Name = 'Target Color',flag='esp viscolor',callback = Utility.ESP.UpdateVisual}
+vs:Toggle{Name = 'Friends',flag = 'esp wl',callback = Utility.ESP.UpdateVisual}:Colorpicker{alpha = 0,Default = Color3.new(0.572549, 1, 0.607843),Name = 'Friend Color',flag='esp wlcolor',callback = Utility.ESP.UpdateVisual}
+local weaptog = vs:Toggle{Name = 'Weapons',flag = 'esp weapon',callback = Utility.ESP.UpdateVisual}weaptog:Colorpicker{alpha = 0,Default = Color3.new(1, 1, 1),Name = 'Weapon Color',flag='esp weaponcolor',callback = Utility.ESP.UpdateVisual}weaptog:Colorpicker{alpha = 0,Default = Color3.new(1, 1, 1),Name = 'Weapon Color',flag='esp weaponcolor2',callback = Utility.ESP.UpdateVisual}
+local disttog = vs:Toggle{Name = 'Distance',flag = 'esp dist',callback = Utility.ESP.UpdateVisual}disttog:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Distance Color',flag='esp distcolor',callback = Utility.ESP.UpdateVisual}disttog:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Distance Color',flag='esp distcolor2',callback = Utility.ESP.UpdateVisual}
+local hptoggle = vs:Toggle{Name = 'Health Bar',flag = 'esp hp',callback = Utility.ESP.UpdateVisual}hptoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(255, 255, 255),Name = 'Health Bar Color',flag='bar color',callback = Utility.ESP.UpdateVisual}hptoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(159,255,159),Name = 'Healthy Color',flag='hp color1',callback = Utility.ESP.UpdateVisual}hptoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(255,2,2),Name = 'dying Color',flag='hp color2',callback = Utility.ESP.UpdateVisual}hptoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(),Name = 'gradient color',flag='hp grad color',callback = Utility.ESP.UpdateVisual}hptoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(116, 116, 116),Name = 'gradient color',flag='hp grad color2',callback = Utility.ESP.UpdateVisual}hptoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(255, 255, 255),Name = 'gradient color',flag='hp grad color3',callback = Utility.ESP.UpdateVisual}
+local hptxttog = vs:Toggle{Name = 'Health Text',flag = 'esp hptxt',callback = Utility.ESP.UpdateVisual}hptxttog:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Health Text Color',flag='esp hptxtcolor',callback = Utility.ESP.UpdateVisual}hptxttog:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Health Text Color',flag='esp hptxtcolor2',callback = Utility.ESP.UpdateVisual}
+vs:Dropdown{Name = 'ESP Settings',Options = {'Filled Box','Health Lerp','Healthbar Gradient','Box Animation','Name Animation','Weapon Animation','Distance Animation','Health Text Animation','Rainbow Healthbar','Rainbow Box','Rainbow Health Text','Rainbow Name','Rainbow Weapon','Rainbow Distance'},max = 93,Default = {'Healthbar Gradient','Box Animation'},flag = 'esp sets',callback = Utility.ESP.UpdateVisual}
+vs:Slider{default = 12,Name = 'Text Size',min = 1,max = 30,Decimals = 1,flag = 'esp txtsize',callback = Utility.ESP.UpdateVisual}
+vs:Slider{default = 1000,Name = 'Max Distance',min = 5,max = 10000,Decimals = 5,flag = 'esp maxdist',callback = Utility.ESP.UpdateVisual}
+vs:Slider{default = .2,Name = 'Box Line Size',min = .01,max = .51,Decimals = .01,flag = 'box size',callback = Utility.ESP.UpdateVisual}
+vs:Slider{default = 1,Name = 'Health Bar Size',min = .1,max = 10,Decimals = .1,flag = 'esp hp size',callback = Utility.ESP.UpdateVisual}
+vs:Slider{default = 3000,Name = 'Visible Check Distance',min = 5,max = 10000,Decimals = 5,flag = 'esp vdist',callback = Utility.ESP.UpdateVisual}
+
+tm:Toggle{Name = 'Enabled',flag = 'team enable',callback = Utility.ESP.UpdateVisual}
+local boxtoggle3 = tm:Toggle{Name = 'Boxes',flag = 'team box',callback = Utility.ESP.UpdateVisual}boxtoggle3:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Box Color',flag='team boxcolor',callback = Utility.ESP.UpdateVisual}boxtoggle3:Colorpicker{alpha = .7,Default = Color3.new(1, 1, 1),Name = 'Box Color',flag='team box fill color',callback = Utility.ESP.UpdateVisual}boxtoggle3:Colorpicker{alpha = 0,Default = Color3.new(1, 1, 1),Name = 'Box Color',flag='team box grad1',callback = Utility.ESP.UpdateVisual}boxtoggle3:Colorpicker{alpha = 0,Default = Color3.new(0, 0, 0),Name = 'Box Color',flag='team box grad2',callback = Utility.ESP.UpdateVisual}
+local chamtog3 = tm:Toggle{Name = 'Chams',flag = 'team chams',callback = Utility.ESP.UpdateVisual}chamtog3:Colorpicker{alpha = .5,Default = Color3.fromRGB(255, 255, 255),Name = 'Chams Fill Color',flag='team chams fill color',callback = Utility.ESP.UpdateVisual}chamtog3:Colorpicker{alpha = 1,Default = Color3.new(1,1,1),Name = 'Chams outline Color',flag='team chams out color ',callback = Utility.ESP.UpdateVisual}
+local nametog2 = tm:Toggle{Name = 'Names',flag = 'team name',callback = Utility.ESP.UpdateVisual}nametog2:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Name Color',flag='team namecolor',callback = Utility.ESP.UpdateVisual}nametog2:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Name Color',flag='team namecolor2',callback = Utility.ESP.UpdateVisual}
+tm:Toggle{Name = 'Visible',flag = 'team vis enabled',callback = Utility.ESP.UpdateVisual}:Colorpicker{alpha = 0,Default = Color3.new(1, 0.486274, 0.486274),Name = 'Target Color',flag='team viscolor',callback = Utility.ESP.UpdateVisual}
+tm:Toggle{Name = 'Friends',flag = 'team wl',callback = Utility.ESP.UpdateVisual}:Colorpicker{alpha = 0,Default = Color3.new(0.572549, 1, 0.607843),Name = 'Friend Color',flag='team wlcolor',callback = Utility.ESP.UpdateVisual}
+local weaptog2 = tm:Toggle{Name = 'Weapons',flag = 'team weapon',callback = Utility.ESP.UpdateVisual}weaptog2:Colorpicker{alpha = 0,Default = Color3.new(1, 1, 1),Name = 'Weapon Color',flag='team weaponcolor',callback = Utility.ESP.UpdateVisual}weaptog2:Colorpicker{alpha = 0,Default = Color3.new(1, 1, 1),Name = 'Weapon Color',flag='team weaponcolor2',callback = Utility.ESP.UpdateVisual}
+local disttog2 = tm:Toggle{Name = 'Distance',flag = 'team dist',callback = Utility.ESP.UpdateVisual}disttog2:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Distance Color',flag='team distcolor',callback = Utility.ESP.UpdateVisual}disttog2:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Distance Color',flag='team distcolor2',callback = Utility.ESP.UpdateVisual}
+local hptoggle3 = tm:Toggle{Name = 'Health Bar',flag = 'team hp',callback = Utility.ESP.UpdateVisual}hptoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(255, 255, 255),Name = 'Health Bar Color',flag='team bar color',callback = Utility.ESP.UpdateVisual}hptoggle3:Colorpicker{alpha = 0,Default = Color3.fromRGB(159,255,159),Name = 'Healthy Color',flag='team hp color1',callback = Utility.ESP.UpdateVisual}hptoggle3:Colorpicker{alpha = 0,Default = Color3.fromRGB(255,2,2),Name = 'dying Color',flag='team hp color2',callback = Utility.ESP.UpdateVisual}hptoggle3:Colorpicker{alpha = 0,Default = Color3.fromRGB(),Name = 'gradient color',flag='team hp grad color',callback = Utility.ESP.UpdateVisual}hptoggle3:Colorpicker{alpha = 0,Default = Color3.fromRGB(116, 116, 116),Name = 'gradient color',flag='team hp grad color2',callback = Utility.ESP.UpdateVisual}hptoggle3:Colorpicker{alpha = 0,Default = Color3.fromRGB(255, 255, 255),Name = 'gradient color',flag='team hp grad color3',callback = Utility.ESP.UpdateVisual}
+local hptxttog2 = tm:Toggle{Name = 'Health Text',flag = 'team hptxt',callback = Utility.ESP.UpdateVisual}hptxttog2:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Health Text Color',flag='team hptxtcolor',callback = Utility.ESP.UpdateVisual}hptxttog2:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Health Text Color',flag='team hptxtcolor2',callback = Utility.ESP.UpdateVisual}
+tm:Dropdown{Name = 'ESP Settings',Options = {'Filled Box','Health Lerp','Healthbar Gradient','Box Animation','Name Animation','Weapon Animation','Distance Animation','Health Text Animation','Rainbow Healthbar','Rainbow Box','Rainbow Health Text','Rainbow Name','Rainbow Weapon','Rainbow Distance'},max = 93,Default = {'Healthbar Gradient','Box Animation'},flag = 'team sets',callback = Utility.ESP.UpdateVisual}
+tm:Slider{default = 12,Name = 'Text Size',min = 1,max = 30,Decimals = 1,flag = 'team txtsize',callback = Utility.ESP.UpdateVisual}
+tm:Slider{default = 1000,Name = 'Max Distance',min = 5,max = 10000,Decimals = 5,flag = 'team maxdist',callback = Utility.ESP.UpdateVisual}
+tm:Slider{default = .2,Name = 'Box Line Size',min = .01,max = .51,Decimals = .01,flag = 'team box size',callback = Utility.ESP.UpdateVisual}
+tm:Slider{default = 1,Name = 'Health Bar Size',min = .1,max = 10,Decimals = .1,flag = 'team hp size',callback = Utility.ESP.UpdateVisual}
+tm:Slider{default = 3000,Name = 'Visible Check Distance',min = 5,max = 10000,Decimals = 5,flag = 'team vdist',callback = Utility.ESP.UpdateVisual}
+
+cl:Toggle{Name = 'Enabled',flag = 'lp enable',callback = Utility.ESP.UpdateVisual}
+local boxtoggle4 = cl:Toggle{Name = 'Boxes',flag = 'lp box',callback = Utility.ESP.UpdateVisual}boxtoggle4:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Box Color',flag='lp boxcolor',callback = Utility.ESP.UpdateVisual}boxtoggle4:Colorpicker{alpha = .7,Default = Color3.new(1, 1, 1),Name = 'Box Color',flag='lp box fill color',callback = Utility.ESP.UpdateVisual}boxtoggle4:Colorpicker{alpha = 0,Default = Color3.new(1, 1, 1),Name = 'Box Color',flag='lp box grad1',callback = Utility.ESP.UpdateVisual}boxtoggle4:Colorpicker{alpha = 0,Default = Color3.new(0, 0, 0),Name = 'Box Color',flag='lp box grad2',callback = Utility.ESP.UpdateVisual}
+local chamtog4 = cl:Toggle{Name = 'Chams',flag = 'lp chams',callback = Utility.ESP.UpdateVisual}chamtog4:Colorpicker{alpha = .5,Default = Color3.fromRGB(255, 255, 255),Name = 'Chams Fill Color',flag='lp chams fill color',callback = Utility.ESP.UpdateVisual}chamtog4:Colorpicker{alpha = 1,Default = Color3.new(1,1,1),Name = 'Chams outline Color',flag='lp chams out color ',callback = Utility.ESP.UpdateVisual}
+local nametog3 = cl:Toggle{Name = 'Names',flag = 'lp name',callback = Utility.ESP.UpdateVisual}nametog3:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Name Color',flag='lp namecolor',callback = Utility.ESP.UpdateVisual}nametog3:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Name Color',flag='lp namecolor2',callback = Utility.ESP.UpdateVisual}
+cl:Toggle{Name = 'Visible',flag = 'lp vis enabled',callback = Utility.ESP.UpdateVisual}:Colorpicker{alpha = 0,Default = Color3.new(1, 0.486274, 0.486274),Name = 'Target Color',flag='lp viscolor',callback = Utility.ESP.UpdateVisual}
+cl:Toggle{Name = 'Friends',flag = 'lp wl',callback = Utility.ESP.UpdateVisual}:Colorpicker{alpha = 0,Default = Color3.new(0.572549, 1, 0.607843),Name = 'Friend Color',flag='lp wlcolor',callback = Utility.ESP.UpdateVisual}
+local weaptog3 = cl:Toggle{Name = 'Weapons',flag = 'lp weapon',callback = Utility.ESP.UpdateVisual}weaptog3:Colorpicker{alpha = 0,Default = Color3.new(1, 1, 1),Name = 'Weapon Color',flag='lp weaponcolor',callback = Utility.ESP.UpdateVisual}weaptog3:Colorpicker{alpha = 0,Default = Color3.new(1, 1, 1),Name = 'Weapon Color',flag='lp weaponcolor2',callback = Utility.ESP.UpdateVisual}
+local disttog3 = cl:Toggle{Name = 'Distance',flag = 'lp dist',callback = Utility.ESP.UpdateVisual}disttog3:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Distance Color',flag='lp distcolor',callback = Utility.ESP.UpdateVisual}disttog3:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Distance Color',flag='lp distcolor2',callback = Utility.ESP.UpdateVisual}
+local hptoggle4 = cl:Toggle{Name = 'Health Bar',flag = 'lp hp',callback = Utility.ESP.UpdateVisual}hptoggle:Colorpicker{alpha = 0,Default = Color3.fromRGB(255, 255, 255),Name = 'Health Bar Color',flag='lp bar color',callback = Utility.ESP.UpdateVisual}hptoggle4:Colorpicker{alpha = 0,Default = Color3.fromRGB(159,255,159),Name = 'Healthy Color',flag='lp hp color1',callback = Utility.ESP.UpdateVisual}hptoggle4:Colorpicker{alpha = 0,Default = Color3.fromRGB(255,2,2),Name = 'dying Color',flag='lp hp color2',callback = Utility.ESP.UpdateVisual}hptoggle4:Colorpicker{alpha = 0,Default = Color3.fromRGB(),Name = 'gradient color',flag='lp hp grad color',callback = Utility.ESP.UpdateVisual}hptoggle4:Colorpicker{alpha = 0,Default = Color3.fromRGB(116, 116, 116),Name = 'gradient color',flag='lp hp grad color2',callback = Utility.ESP.UpdateVisual}hptoggle4:Colorpicker{alpha = 0,Default = Color3.fromRGB(255, 255, 255),Name = 'gradient color',flag='lp hp grad color3',callback = Utility.ESP.UpdateVisual}
+local hptxttog3 = cl:Toggle{Name = 'Health Text',flag = 'lp hptxt',callback = Utility.ESP.UpdateVisual}hptxttog3:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Health Text Color',flag='lp hptxtcolor',callback = Utility.ESP.UpdateVisual}hptxttog3:Colorpicker{alpha = 0,Default = Color3.new(1,1,1),Name = 'Health Text Color',flag='lp hptxtcolor2',callback = Utility.ESP.UpdateVisual}
+cl:Dropdown{Name = 'ESP Settings',Options = {'Filled Box','Health Lerp','Healthbar Gradient','Box Animation','Name Animation','Weapon Animation','Distance Animation','Health Text Animation','Rainbow Healthbar','Rainbow Box','Rainbow Health Text','Rainbow Name','Rainbow Weapon','Rainbow Distance'},max = 93,Default = {'Healthbar Gradient','Box Animation'},flag = 'lp sets',callback = Utility.ESP.UpdateVisual}
+cl:Slider{default = 12,Name = 'Text Size',min = 1,max = 30,Decimals = 1,flag = 'lp txtsize',callback = Utility.ESP.UpdateVisual}
+cl:Slider{default = 1000,Name = 'Max Distance',min = 5,max = 10000,Decimals = 5,flag = 'lp maxdist',callback = Utility.ESP.UpdateVisual}
+cl:Slider{default = .2,Name = 'Box Line Size',min = .01,max = .51,Decimals = .01,flag = 'lp box size',callback = Utility.ESP.UpdateVisual}
+cl:Slider{default = 1,Name = 'Health Bar Size',min = .1,max = 10,Decimals = .1,flag = 'lp hp size',callback = Utility.ESP.UpdateVisual}
+cl:Slider{default = 3000,Name = 'Visible Check Distance',min = 5,max = 10000,Decimals = 5,flag = 'lp vdist',callback = Utility.ESP.UpdateVisual}
+
+
+local mv = Tab3:Section{Name = 'Movement'}
+mv:Toggle{Name = 'Bunny-Hop',risky = true,flag = 'bhop'}
+mv:Toggle{Name = 'CFrame Fly',risky = true,flag = 'cfly'}:Keybind{Mode = 'Toggle',Name = 'CFrame Fly',flag = 'flybind'}
+mv:Toggle{Name = 'Movement Speed',risky = true,flag = 'move'}:Keybind{Mode = 'Toggle',Name = 'Speed',flag = 'speed bind'}
+mv:Slider{default = 50,Name = 'Speed',state = 50,min = 1,max = 1000,Decimals = 2,flag = 'movespeed'}
+mv:Slider{default = 200,Name = 'Fly Speed',state = 200,min = 1,max = 2000,Decimals = 5,flag = 'cflyspeed'}
+
+local Menu,Config = Tab4:Section{Name = 'Menu',Size = 120},Tab4:Section{Name = 'Configs',Size = 200,Side = 'Right'}
+Menu:Colorpicker{alpha = 0,Default = Color3.new(0.811764, 0.596078, 0.494117),Name = 'Menu Accent',flag='accent',callback = function(c)Library:ChangeAccent(Color3.new(0.811764, 0.596078, 0.494117))Library:ChangeAccent(c)end}task.wait()
+Menu:Keybind{Name = 'Menu key',Flag = 'MenuKey',Default = Enum.KeyCode.End,Mode = 'Toggle',Ignore = true,Callback = function() LibraryOpen = not LibraryOpen Library:SetOpen(LibraryOpen) end}task.wait()
+Menu:Dropdown{Name = 'Notification Position',Flag = 'Notification Position',Options = {'Top Left','Middle'},Default = 'Top Left'}task.wait()
+Menu:Label{Centered = true,Name = 'Credits'}task.wait()
+Menu:Label{Centered = true,Name = '0f14 : Main'}task.wait()
+Menu:Label{Centered = true,Name = 'Portal : User Interface'}task.wait()
+
+ConfigList=Config:Dropdown{Name = 'Config List',Flag = 'SettingConfigurationList',Options = {}}task.wait()
+Config:Toggle{default = true,Name = 'Keybind List',Flag = 'Keybind List',Callback = function(Bool)if getgenv().PlaceHolderUI then getgenv().PlaceHolderUI.Enabled=Bool end end}task.wait()
+Config:Textbox{Name = 'Config Name',Flag = 'SettingsConfigurationName',Placeholder = 'Config Name'}task.wait()
+Config:Button{Name = 'Create',Callback = function()writefile('Northern/'..tostring(game.PlaceId)..'/configs/' .. flags.SettingsConfigurationName .. '.cfg',Library:GetConfig())Utility.UpdateConfigList()end}task.wait()
+Config:Button{Name = 'Save',Callback = function()if flags.SettingConfigurationList then writefile('Northern/'..tostring(game.PlaceId)..'/configs/' .. flags.SettingConfigurationList .. '.cfg',Library:GetConfig())end Utility.ESP.UpdateVisual()end}task.wait()
+Config:Button{Name = 'Load',Callback = function()if flags.SettingConfigurationList then Library:LoadConfig(readfile('Northern/'..tostring(game.PlaceId)..'/configs/' .. flags.SettingConfigurationList .. '.cfg'))end Utility.ESP.UpdateVisual()end}task.wait()
+Config:Button{Name = 'Delete',Callback = function()if flags.SettingConfigurationList then delfile('Northern/'..tostring(game.PlaceId)..'/configs/' .. flags.SettingConfigurationList .. '.cfg')end Utility.UpdateConfigList()Utility.ESP.UpdateVisual()end}task.wait()
+Config:Button{Name = 'Refresh',Callback = Utility.UpdateConfigList}task.wait()
+Utility.UpdateConfigList()
+
+-------------------//FUNCTIONS//----------------------
+
+function Utility:Create(Class, Properties)
+    local _Instance = typeof(Class) == 'string' and Instance.new(Class) or Class
+    for Property, Value in pairs(Properties) do
+        _Instance[Property] = Value
+    end
+    return _Instance
+end
+
+function Utility.FindChild(Parent:Instance,ChildName:string)
+    return pcall(function()return Parent[ChildName]end)and Parent[ChildName]
+end
+
+function Utility.CreateLoop(Wait:number,Function:'function')
+    task.spawn(function()while true do Function()task.wait(Wait)end end)
+end
+
+function Utility.Combat.VisibleCheck(Character:Instance,Position:Vector3,Origin:Vector3,Player:Instance)
+    local params = RaycastParams.new()params.FilterDescendantsInstances={lp.Character,camera,Player,Character,Utility.FindChild(ws.Map,"Clips"),Utility.FindChild(ws.Map,"SpawnPoints"),Utility.FindChild(ws.Map,"TSpawns"),Utility.FindChild(ws.Map,"CTSpawns"),Utility.FindChild(ws.Map,"Ignore"),Utility.FindChild(ws,"Debris"),Utility.FindChild(ws,"Ray_Ignore")}params.FilterType=Enum.RaycastFilterType.Blacklist params.IgnoreWater = true
+    return (not ws.Raycast(ws,Origin,Position-Origin,params))
+end
+
+function Utility.Combat.Ragebot()
+    if ws["Status"]["RoundOver"].Value or ws.Status.Preparation.Value or (flags['desync mode'] == 'Invisible' and flags['desync'] and flags['desync bind']) then return end
+    local players = plrs:GetPlayers()
+    if flags['kill all'] then
+        for _,v in next,players do
+            if v.TeamColor == lp.TeamColor or not pcall(function()return v.Character.Head end) then continue end
+            task.spawn(Utility.Combat.RegisterHit,v.Character.Head,v.Character.Head.Position,'OLDSD',1/0,true,flags['use ci'] and flags['ci'])
+        end
+        return
+    end
+end
+
+function Utility.Misc.UpdateSkybox(Sky:string)
+    pcall(function()ls.customsky:Destroy()end)pcall(function()ls.SunRays.Enabled = false end)
+    local customsky = Instance.new'Sky'customsky.Name = 'customsky'customsky.SunTextureId = 'rbxassetid://'customsky.CelestialBodiesShown = 'rbxassetid://'customsky.Parent = ls
+    if not Skyboxes[Sky] then return end
+    for i,v in next,Skyboxes[Sky] do
+        customsky[i] = v
+    end
+end
+
+function Utility.CheckPlayer(v:Instance)
+    local chr = v.Character
+    return v ~= lp and not v.Neutral and v.TeamColor ~= lp.TeamColor and not pcall(function()return chr.ForceField end) and pcall(function() return chr.Head and chr.HumanoidRootPart and chr.Humanoid end) and chr.Humanoid.Health > 0
+end
+
+function Utility.Combat.RegisterHit(HitPart:Instance, position:Vector3, gun:string, damageModifier:number, wallbang:boolean,customicon:string)
+    task.spawn(function()RS.Events.HitPart:FireServer(HitPart,Vector3.new(0,0/0,0),gun,8192,lp.Character and Utility.FindChild(lp.Character,'Gun'),nil,damageModifier,wallbang,wallbang,Vector3.zero,ws.DistributedTime.Value,Vector3.zero,false,nil,nil,nil,nil,nil ,nil,nil,nil,nil,nil ,nil,nil)end)
+    if customicon then task.spawn(function()RS.Events.HitPart:FireServer(HitPart,Vector3.new(0,0/0,0),customicon,8192,lp.Character and Utility.FindChild(lp.Character,'Gun'),nil,damageModifier,wallbang,wallbang,Vector3.zero,ws.DistributedTime.Value,Vector3.zero,false,nil,nil,nil,nil,nil ,nil,nil,nil,nil,nil ,nil,nil)end) end
+    if flags['hitsound'] then Utility.Misc.PlayAudio(((not flags['custom sound'] and 'rbxassetid://'..SoundTBL[flags.sound_type])) or CustomSoundID,flags['vol']) end
+    Utility.Misc.HitMarker(position)
+    if flags['kill all'] then return end
+    Utility.Misc.CreateNewTracer(position)
+end
+
+function Utility.Misc.Viewmodel()
+    if not flags['vm'] then return end
+    local Viewmodel = Utility.FindChild(camera,'Arms')
+    if not Viewmodel then return end
+    if Utility.FindChild(Viewmodel,'AnimSaves') then Viewmodel.AnimSaves:Destroy() end
+    local Arms = Viewmodel:FindFirstChildOfClass('Model')
+    if Arms and flags['no ac'] then
+        pcall(function()
+            Arms["Left Arm"].Glove:Destroy()
+            Arms["Right Arm"].Glove:Destroy()
+            Arms["Left Arm"].Sleeve:Destroy()
+            Arms["Right Arm"].Sleeve:Destroy()
+        end)
+    end
+    for _,v in next,Viewmodel:GetChildren() do
+        if v.Name == 'HumanoidRootPart' or v.Name == 'Left Arm' or v.Name == 'Right Arm' or (string.find(v.ClassName,'Part') and v.Transparency == 1) then continue end
+        if Utility.FindChild(v,"SurfaceAppearance") then
+            v["SurfaceAppearance"]:Destroy()
+        end
+        if v.ClassName == 'Part' then
+            v.Color = flags['vm color'].Color
+            v.Material = flags['vm mater']
+            v.Transparency = (not flags['tween trans'] and flags['vm color'].Transparency)
+        elseif v.ClassName == 'MeshPart' then
+            v.TextureID = (flags['vm mater'] == 'ForceField' and (flags['ff animation'] and ForceFieldTextures[flags.animation])) or ''
+            v.Color = flags['vm color'].Color
+            v.Material = flags['vm mater']
+            v.Transparency = (not flags['tween trans'] and flags['vm color'].Transparency)
+        elseif v.ClassName == 'Model' and Utility.FindChild(v,"Left Arm") then
+            v["Left Arm"].Color = flags['arm color'].Color
+            v["Right Arm"].Color = flags['arm color'].Color
+            v["Left Arm"].Transparency = flags['arm color'].Transparency
+            v["Right Arm"].Transparency = flags['arm color'].Transparency
+            v["Left Arm"].Material = flags['arm mater']
+            v["Right Arm"].Material = flags['arm mater']
+        end
+    end
+end
+
+function Utility.Misc.AntiAim()
+    task.spawn(pcall,function()
+        local chr = lp.Character
+        local human = chr.Humanoid
+        local Root = chr.HumanoidRootPart
+        if not flags['aa'] then human.AutoRotate = true return end
+        human.AutoRotate = false
+        Root.CFrame = CFrame.new(Root.Position,Root.Position + Vector3.new(camera.CFrame.lookVector.X,0,camera.CFrame.lookVector.Z)) * CFrame.Angles(0,math.rad(if not flags['r yaw'] then flags['yaw'] else math.random(flags['r yaw min'],flags['r yaw max'])),0)
+        task.wait()
+        Root.CFrame = CFrame.new(Root.Position,Root.Position + Vector3.new(camera.CFrame.lookVector.X,0,camera.CFrame.lookVector.Z)) * CFrame.Angles(0,math.rad(if not flags['r yaw'] then flags['yaw2'] else math.random(flags['r yaw min'],flags['r yaw max'])),0)
+    end)
+end
+
+function Utility.Movement:Speed(Enabled:boolean,Delta:number,Movement:Vector3,Speed:number)
+    if not Enabled or Movement.Unit.X ~= Movement.Unit.X then return end
+    local chr = lp.Character
+    Movement = Movement.Unit * Speed * Delta
+    chr.HumanoidRootPart.CFrame = chr.HumanoidRootPart.CFrame + Vector3.new(Movement.X,0,Movement.Z)
+end
+
+function Utility.Movement:Fly(Enabled:boolean,Delta:number,Movement:Vector3,Speed:number)
+    if not Enabled then return pcall(function()lp.Character.Head.Anchored=false end) end
+    if Movement.Unit.X ~= Movement.Unit.X then return end
+    local Head,HeadCF,CameraCF = lp.Character.Head,lp.Character.Head.CFrame,camera.CFrame
+    Head.Anchored = true
+    Movement = Movement.Unit * Speed * 2 * Delta
+    local MoveDir,CameraOffset = Vector3.new(Movement.X,0,Movement.Z),HeadCF:ToObjectSpace(CameraCF).Position
+    CameraCF = CameraCF * CFrame.new(-CameraOffset.X,-CameraOffset.Y,-CameraOffset.Z + 1)
+    local CameraPos,HeadPos = CameraCF.Position,HeadCF.Position
+    Head.CFrame = CFrame.new(HeadPos) * (CameraCF - CameraPos) * CFrame.new(CFrame.new(CameraPos,Vector3.new(HeadPos.X,CameraPos.Y,HeadPos.Z)):VectorToObjectSpace(MoveDir))
+end
+
+function Utility.Movement:Update(Delta:number,Speed:table,Fly:table)
+    local Movement = Vector3.zero
+    local dir = camera.CFrame.LookVector * Vector3.new(1,0,1)
+    if uis:IsKeyDown(Enum.KeyCode.W) then
+        Movement = Movement + dir
+    end
+    if uis:IsKeyDown(Enum.KeyCode.S) then
+        Movement = Movement - dir
+    end
+    if uis:IsKeyDown(Enum.KeyCode.D) then
+        Movement = Movement + Vector3.new(-dir.Z,0,dir.X)
+    end
+    if uis:IsKeyDown(Enum.KeyCode.A) then
+        Movement = Movement + Vector3.new(dir.Z,0,-dir.X)
+    end
+    self:Fly(Fly.Enabled,Delta,Movement,Fly.Speed)
+    self:Speed(Speed.Enabled,Delta,Movement,Speed.Speed)
+end
+
+function Utility.Desync:GetOrigin()
+    return self.Origin or CFrame.new()
+end
+
+function Utility.Desync:SetOrigin(Cframe:CFrame)
+    self.Origin = Cframe
+end
+
+function Utility.Desync.Step(Amount:number,Origin:Vector3)
+    local frames = Utility.Desync.Frames
+    frames[#frames + 1] = Origin
+    if frames[#frames - Amount] then
+        Utility.Desync:SetOrigin(frames[#frames - Amount])
+    end
+end
+
+Utility.ESP.ESPHolder = Utility:Create("ScreenGui",{Parent = Hidden,Name = "操E你S妈P的"})
+
+function Utility.ESP.InOut(Delta)
+    return math.sin(((math.pi / 2) * Delta) - (math.pi / 2)) + 1
+end
+
+function Utility.ESP.GetTool(Player)
+    return tostring(Player:FindFirstChildOfClass('Tool'))
+end
+
+function Utility.ESP.AddPlayer(Player)
+    if Utility.ESP.Players[Player] then return end
+    local Settings = Utility.ESP.Enemies
+    Utility.ESP.Players[Player] = {
+        health = 0,
+        Name = Utility:Create("TextLabel", {Parent = Utility.ESP.ESPHolder, Position = UDim2.new(0.5, 0, 0, -11), Size = UDim2.new(0, 100, 0, 20), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Utility.ESP.Font or 2, TextSize = Utility.ESP.FontSize, TextStrokeTransparency = 0, TextStrokeColor3 = Color3.fromRGB(0, 0, 0), RichText = true}),
+        NameGradient = Utility:Create("UIGradient", {Parent = Utility.ESP.ESPHolder, Enabled = Settings.Boxes.Gradient, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Settings.Boxes.GradientRGB1), ColorSequenceKeypoint.new(1, Settings.Boxes.GradientRGB2)}}),
+        Distance = Utility:Create("TextLabel", {Parent = Utility.ESP.ESPHolder, Position = UDim2.new(0.5, 0, 0, 11), Size = UDim2.new(0, 100, 0, 20), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Utility.ESP.Font or 2, TextSize = Utility.ESP.FontSize, TextStrokeTransparency = 0, TextStrokeColor3 = Color3.fromRGB(0, 0, 0), RichText = true}),
+        DistanceGradient = Utility:Create("UIGradient", {Parent = Utility.ESP.ESPHolder, Enabled = Settings.Boxes.Gradient, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Settings.Boxes.GradientRGB1), ColorSequenceKeypoint.new(1, Settings.Boxes.GradientRGB2)}}),
+        Weapon = Utility:Create("TextLabel", {Parent = Utility.ESP.ESPHolder, Position = UDim2.new(0.5, 0, 0, 31), Size = UDim2.new(0, 100, 0, 20), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Utility.ESP.Font or 2, TextSize = Utility.ESP.FontSize, TextStrokeTransparency = 0, TextStrokeColor3 = Color3.fromRGB(0, 0, 0), RichText = true}),
+        WeaponGradient = Utility:Create("UIGradient", {Parent = Utility.ESP.ESPHolder, Enabled = Settings.Boxes.Gradient, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Settings.Boxes.GradientRGB1), ColorSequenceKeypoint.new(1, Settings.Boxes.GradientRGB2)}}),
+        Box = Utility:Create("Frame", {Parent = Utility.ESP.ESPHolder, BackgroundTransparency = 0.75, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, Name = 'Box'}),
+        Gradient1 = Utility:Create("UIGradient", {Parent = Utility.ESP.ESPHolder, Enabled = Settings.Boxes.GradientFill, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Settings.Boxes.GradientFillRGB1), ColorSequenceKeypoint.new(1, Settings.Boxes.GradientFillRGB2)}}),
+        FullBox = Utility:Create("UIStroke", {Parent = Utility.ESP.ESPHolder.Box, Enabled = Settings.Boxes.Gradient, Transparency = 0, Color = Color3.fromRGB(0, 0, 0), LineJoinMode = Enum.LineJoinMode.Miter}),
+        Gradient2 = Utility:Create("UIGradient", {Parent = Utility.ESP.ESPHolder, Enabled = Settings.Boxes.Gradient, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Settings.Boxes.GradientRGB1), ColorSequenceKeypoint.new(1, Settings.Boxes.GradientRGB2)}}),
+        Healthbar = Utility:Create("Frame", {Parent = Utility.ESP.ESPHolder, Name = 'Healthbar', BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0}),
+        BehindHealthbar = Utility:Create("Frame", {Parent = Utility.ESP.ESPHolder, ZIndex = -1, BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0}),
+        HealthbarGradient = Utility:Create("UIGradient", {Parent = Utility.ESP.ESPHolder, Enabled = Settings.Healthbar.Gradient, Rotation = -90, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Settings.Healthbar.GradientRGB1), ColorSequenceKeypoint.new(0.5, Settings.Healthbar.GradientRGB2), ColorSequenceKeypoint.new(1, Settings.Healthbar.GradientRGB3)}}),
+        HealthText = Utility:Create("TextLabel", {Parent = Utility.ESP.ESPHolder, Position = UDim2.new(0.5, 0, 0, 31), Size = UDim2.new(0, 100, 0, 20), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 1, TextColor3 = Color3.fromRGB(255, 255, 255), Font = Utility.ESP.Font or 2, TextSize = Utility.ESP.FontSize, TextStrokeTransparency = 0, TextStrokeColor3 = Color3.fromRGB(0, 0, 0)}),
+        HealthTextGradient = Utility:Create("UIGradient", {Parent = Utility.ESP.ESPHolder, Enabled = Settings.Boxes.Gradient, Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Settings.Boxes.GradientRGB1), ColorSequenceKeypoint.new(1, Settings.Boxes.GradientRGB2)}}),
+        Chams = Utility:Create("Highlight", {Parent = Utility.ESP.ESPHolder,Enabled = true}),
+        HideESP = function()
+            for _,obj in next,Utility.ESP.Players[Player] do
+                if typeof(obj) ~= 'Instance' then continue end
+                if obj.ClassName == 'Highlight' or obj.ClassName == 'UIStroke' or obj.ClassName == 'UIGradient' then obj.Enabled = false continue end
+                obj.Visible = false
+            end
+        end
+    }
+end
+
+function Utility.ESP.RemovePlayer(Player)
+    for _,_Instance in next,Utility.ESP.Players[Player] do
+        if typeof(_Instance) ~= 'Instance' then continue end
+        _Instance:Destroy()
+    end
+    Utility.ESP.Players[Player] = nil
+end
+
+-------------------//CONNECTIONS//----------------------
+
+for _,Player in next,plrs:GetPlayers() do
+    Utility.ESP.AddPlayer(Player)
+end
+
+plrs.PlayerAdded:Connect(Utility.ESP.AddPlayer)
+
+plrs.PlayerRemoving:Connect(Utility.ESP.RemovePlayer)
+
+ls.Changed:Connect(function(property)
+    if not table.find(LightingProperties,(property)) then return end
+    if typeof(flags['w '..property]) == 'table' then return pcall(function()ls[property] = flags['w '..property].Color end)end
+    ls[property] = flags['w '..property]
+end)
+
+rs.Heartbeat:Connect(function(Delta)
+    Utility.Desync.OldCFrame,Utility.Desync.OldVelocity = nil,nil
+    pcall(function()
+        local desynccham = Utility.FindChild(camera,'local desync')
+        Utility.Movement:Update(
+            Delta,
+            {Enabled = flags['move'] and flags['speed bind'],Speed = flags['movespeed']},
+            {Enabled = flags['cfly'] and flags['flybind'] and not (flags['desync'] and flags['desync bind']),Speed = flags['cflyspeed']}
+        )
+        if flags['desync'] and flags['desync bind'] and not Utility.Desyncing then
+            Utility.Desync.CFrame,Utility.Desync.Velocity,Utility.Desync.OldCFrame = lp.Character.HumanoidRootPart.CFrame,lp.Character.HumanoidRootPart.Velocity,lp.Character.HumanoidRootPart.CFrame
+            Utility.Desync.Step(flags['desync tick'],lp.Character.HumanoidRootPart.CFrame)
+            local ANGX,ANGY,ANGZ,randomAngle,fakeCFrame = math.rad(flags['a x']),math.rad(flags['a y']),math.rad(flags['a z']),math.rad(math.random(1,180)),Utility.Desync:GetOrigin()
+            if Utility.Desync.Angle >= 360 then
+                Utility.Desync.Angle = 0
+            end
+            Utility.Desync.Angle += 10*Delta*flags['desync spin speed']
+            --if flags['at target'] and Target then
+                --fakeCFrame = CFrame.new(Target[5])
+            --end
+            fakeCFrame = fakeCFrame * ((flags['desync angle'] == 'Manual' and CFrame.Angles(ANGX,ANGY,ANGZ)) or (flags['desync angle'] == 'Random' and CFrame.Angles(randomAngle,randomAngle,randomAngle)) or (CFrame.Angles((table.find(flags['spin angle'],'X') and math.rad(Utility.Desync.Angle)) or 0,(table.find(flags['spin angle'],'Y') and math.rad(Utility.Desync.Angle)) or 0,(table.find(flags['spin angle'],'Z') and math.rad(Utility.Desync.Angle)) or 0)))
+            if flags['desync mode'] == 'Manual' then
+                fakeCFrame = fakeCFrame * CFrame.new(Vector3.new(flags['m x'],flags['m y'],flags['m z']))
+            elseif flags['desync mode'] == 'Random' then
+                fakeCFrame = fakeCFrame * CFrame.new(Vector3.new(math.random(flags['min x'],flags['max x']),math.random(flags['min y'],flags['max y']),math.random(flags['min z'],flags['max z'])))
+            elseif flags['desync mode'] == 'Invisible' then
+                fakeCFrame = CFrame.new(9e99,9e99,9e99)
+            end
+            if desynccham then desynccham.HumanoidRootPart.CFrame = fakeCFrame end
+            if not flags['velocity desync'] then
+                lp.Character.HumanoidRootPart.CFrame = fakeCFrame
+            else
+                lp.Character.HumanoidRootPart.Velocity = fakeCFrame.Position*10
+            end
+            Utility.Desyncing = true
+        else
+            Utility.Desync.CFrame = nil
+            Utility.Desync.Velocity = nil
+            if not desynccham then return end
+            desynccham.HumanoidRootPart.CFrame = CFrame.new(9e999)
+        end
+    end)
+end)
+
+rs:BindToRenderStep('“TOP1”',-5,function(Delta)
+    local CurrentTick = tick()
+    RotationAngle += (CurrentTick - Tick) * math.cos(math.pi / 4 * CurrentTick - math.pi / 2)
+    Tick = CurrentTick
+    if Utility.ESP.Rainbow then
+        Utility.ESP.Rainbow1 = (Utility.ESP.Rainbow1 or 2/3) + Delta * Utility.ESP.RainbowSpeed/10
+        Utility.ESP.Rainbow2 = (Utility.ESP.Rainbow2 or Utility.ESP.Rainbow1 * (2/3)) + Delta * Utility.ESP.RainbowSpeed/10
+        Utility.ESP.Rainbow3 = (Utility.ESP.Rainbow3 or Utility.ESP.Rainbow1 * (1/3)) + Delta * Utility.ESP.RainbowSpeed/10
+        if Utility.ESP.Rainbow1 > 1 then Utility.ESP.Rainbow1 = Delta * Utility.ESP.RainbowSpeed/10 end
+        if Utility.ESP.Rainbow2 > 1 then Utility.ESP.Rainbow2 = Delta * Utility.ESP.RainbowSpeed/10 end
+        if Utility.ESP.Rainbow3 > 1 then Utility.ESP.Rainbow3 = Delta * Utility.ESP.RainbowSpeed/10 end
+    end
+    camera.FieldOfView = flags['cam fov']
+    pcall(function()
+        if flags['desync'] and flags['desync bind'] and Utility.Desync.CFrame and Utility.Desync.Velocity and Utility.Desyncing then
+            lp.Character.HumanoidRootPart.CFrame,lp.Character.HumanoidRootPart.Velocity = Utility.Desync.CFrame,Utility.Desync.Velocity
+        elseif (Utility.Desync.OldCFrame or Utility.Desync.OldVelocity) and Utility.Desyncing then
+            Utility.Desync.CFrame,Utility.Desync.Velocity,lp.Character.HumanoidRootPart.CFrame,lp.Character.HumanoidRootPart.Velocity = Utility.Desync.OldCFrame,Utility.Desync.OldVelocity,Utility.Desync.OldCFrame,Utility.Desync.OldVelocity
+        end
+        Utility.Desyncing = false
+    end)
+    for plr,objs in next,Utility.ESP.Players do
+        local Settings = Utility.ESP[if plr == lp then 'LocalPlayer' elseif (plr.TeamColor ~= lp.TeamColor) then 'Enemies' else 'Teammates']
+        if not Settings.Enabled then objs.HideESP() continue end
+
+        local Character = (plr.Character and plr.Character.PrimaryPart and plr.Character) or Utility.FindChild(ws.Debris,plr.Name)
+        if not Character then objs.HideESP() continue end
+
+        local HRP = Character.PrimaryPart or Character.UpperTorso
+        if not HRP then objs.HideESP() continue end
+
+        local Dist = (camera.CFrame.Position - HRP.Position).Magnitude
+        if Dist > Settings.MaxDistance then objs.HideESP() continue end
+
+        local Humanoid = Utility.FindChild(Character,(Character.Parent ~= ws.Debris and "Humanoid") or "Humanoid2")
+        if not Humanoid then objs.HideESP() continue end
+
+        local Pos, OnScreen = camera.WorldToScreenPoint(camera,HRP.Position)
+        if not OnScreen then objs.HideESP() continue end
+
+        local Effect = Utility.ESP.InOut(Delta) * 100
+        local scaleFactor = 1 / (Pos.Z * math.tan(math.rad(camera.FieldOfView * 0.5)) * 2) * 1000
+        local w, h,health = (camera.ViewportSize.X/409.6) * scaleFactor, (camera.ViewportSize.Y/168) * scaleFactor,(((Humanoid.Health<0 or Character.Parent == ws.Debris) and 0) or Humanoid.Health) / Humanoid.MaxHealth
+
+        if health ~= Utility.ESP.Players[plr].health and health >= Utility.ESP.Players[plr].health then
+            Utility.ESP.Players[plr].health = health
+        end
+        if (Utility.ESP.Players[plr].health - health) > 0 then
+            Utility.ESP.Players[plr].health = Utility.ESP.Players[plr].health - Effect
+        elseif (Utility.ESP.Players[plr].health - health) < 0 then
+            Utility.ESP.Players[plr].health = health
+        end
+
+        if health <= 0 then
+            for objname,obj in next,objs do
+                if typeof(obj) ~= 'Instance' or obj.ClassName == 'Highlight' or obj.ClassName == 'UIGradient' then continue end
+                local Trans = (if obj.ClassName == 'TextLabel' then 'TextTransparency' elseif objname == 'FullBox' then 'Transparency' else 'BackgroundTransparency')
+                if obj[Trans] < 1 then
+                    local NextTransparency = obj[Trans] + Effect
+                    obj[Trans] = (if NextTransparency >= 1 then 1 else NextTransparency)
+                else
+                    obj[Trans] = 1
+                    if objname == 'FullBox' then continue end
+                    obj.Visible = false
+                end
+            end
+            objs.Chams.Enabled = false
+        else
+            for objname,obj in next,objs do
+                if typeof(obj) ~= 'Instance' or obj.ClassName == 'Highlight' or obj.ClassName == 'UIGradient' then continue end
+                local Trans = (if obj.ClassName == 'TextLabel' then 'TextTransparency' elseif objname == 'FullBox' then 'Transparency' else 'BackgroundTransparency')
+                if objname ~= 'Box' then obj[Trans] = 0 continue end
+                if Settings.Boxes.Filled.Enabled then obj[Trans] = Settings.Boxes.Filled.Transparency else obj[Trans] = 1 continue end
+            end
+        end
+
+        local isfriend = Settings.Friendcheck and lp:IsFriendsWith(plr.UserId)
+        local isvisible = not isfriend and (if Settings.VisibleCheck and Dist <= Settings.VisibleCheckDistance then Utility.Combat.VisibleCheck(Character,Character.Head.Position,camera.CFrame.Position,plr) else nil)
+        local forcecolor = (isfriend and Settings.FriendcheckRGB) or (isvisible and Settings.VisibleCheckRGB) or nil
+        local rgb1,rgb2,rgb3 = Color3.fromHSV(Utility.ESP.Rainbow1,1,1),Color3.fromHSV(Utility.ESP.Rainbow2,1,1),Color3.fromHSV(Utility.ESP.Rainbow3,1,1)
+        do -- Chams
+            objs.Chams.Enabled = health>0 and Settings.Chams.Enabled
+            if objs.Chams.Enabled then
+                objs.Chams.FillTransparency = Settings.Chams.Fill_Transparency
+                objs.Chams.OutlineTransparency = Settings.Chams.Outline_Transparency
+                objs.Chams.Adornee = Character
+                objs.Chams.FillColor = (isvisible and Settings.VisibleCheckRGB) or (isfriend and Settings.FriendcheckRGB) or Settings.Chams.FillRGB
+                objs.Chams.OutlineColor = (isvisible and Settings.VisibleCheckRGB) or (isfriend and Settings.FriendcheckRGB) or Settings.Chams.OutlineRGB
+                if Settings.Chams.VisibleCheck then
+                    objs.Chams.DepthMode = "Occluded"
+                else
+                    objs.Chams.DepthMode = "AlwaysOnTop"
+                end
+            end
+        end
+        -- Boxes
+        do
+            objs.Box.Visible = true
+            objs.FullBox.Enabled = Settings.Boxes.FullBox
+            objs.Gradient1.Enabled,objs.Gradient2.Enabled = Settings.Boxes.Filled.Enabled,objs.FullBox.Enabled
+            if objs.Box.Visible then
+                objs.Box.Position = UDim2.new(0, Pos.X - w / 2, 0, Pos.Y - h / 2)
+                objs.Box.Size = UDim2.new(0, w, 0, h)
+                objs.Box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                objs.FullBox.Parent = objs.Box
+                objs.FullBox.Color = (isvisible and Settings.VisibleCheckRGB) or (isfriend and Settings.FriendcheckRGB) or Settings.Boxes.Filled.RGB
+                objs.Gradient1.Parent = objs.Box
+                objs.Gradient2.Parent = objs.FullBox
+                objs.Gradient1.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,forcecolor or (Settings.Boxes.Rainbow and rgb1) or Settings.Boxes.GradientRGB1), ColorSequenceKeypoint.new(.5,forcecolor or (Settings.Boxes.Rainbow and rgb2) or Settings.Boxes.GradientRGB2), ColorSequenceKeypoint.new(1,forcecolor or (Settings.Boxes.Rainbow and rgb3) or Settings.Boxes.Filled.RGB)}
+                objs.Gradient2.Color = objs.Gradient1.Color
+                if Settings.Boxes.Animate then
+                    objs.Gradient1.Rotation = RotationAngle * Settings.Boxes.RotationSpeed
+                    objs.Gradient2.Rotation = RotationAngle * Settings.Boxes.RotationSpeed
+                else
+                    objs.Gradient1.Rotation = -90
+                    objs.Gradient2.Rotation = -90
+                end
+            end
+        end
+        -- Healthbar
+        do
+            objs.Healthbar.Visible,objs.BehindHealthbar.Visible = Settings.Healthbar.Enabled,Settings.Healthbar.Enabled
+            if objs.Healthbar.Visible then
+                objs.Healthbar.Position = UDim2.new(0, Pos.X - w / 2 - 6, 0, Pos.Y - h / 2 + h * (1 - Utility.ESP.Players[plr].health))
+                objs.Healthbar.Size = UDim2.new(0, Settings.Healthbar.Width, 0, h * Utility.ESP.Players[plr].health)
+                objs.Healthbar.BackgroundColor3 = (Settings.Healthbar.Lerp and Lerp(Settings.Healthbar.DyingColor,Settings.Healthbar.HealthyColor,Utility.ESP.Players[plr].health)) or Settings.Healthbar.RGB
+                objs.BehindHealthbar.Position = UDim2.new(0, Pos.X - w / 2 - 6, 0, Pos.Y - h / 2)
+                objs.BehindHealthbar.Size = UDim2.new(0, Settings.Healthbar.Width, 0, h)
+            end
+            objs.HealthbarGradient.Enabled = Settings.Healthbar.Gradient
+            objs.HealthbarGradient.Parent = objs.Healthbar
+            objs.HealthbarGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,forcecolor or (Settings.Healthbar.Rainbow and rgb1) or Settings.Healthbar.GradientRGB1), ColorSequenceKeypoint.new(0.5,forcecolor or (Settings.Healthbar.Rainbow and rgb2) or Settings.Healthbar.GradientRGB2), ColorSequenceKeypoint.new(1,forcecolor or (Settings.Healthbar.Rainbow and rgb3) or Settings.Healthbar.GradientRGB3)}
+            -- Health Text
+            do
+                objs.HealthText.Visible = Settings.Healthbar.HealthText
+                objs.HealthTextGradient.Enabled = Settings.Healthbar.HealthText
+                objs.HealthTextGradient.Parent = objs.HealthText
+                objs.HealthTextGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,forcecolor or (Settings.Healthbar.RainbowText and rgb2) or Settings.Healthbar.HealthTextGradient1), ColorSequenceKeypoint.new(1,forcecolor or (Settings.Healthbar.RainbowText and rgb3) or Settings.Healthbar.HealthTextGradient2)}
+                if Settings.Healthbar.Animate then
+                    objs.HealthTextGradient.Rotation = RotationAngle * Settings.Boxes.RotationSpeed
+                else
+                    objs.HealthTextGradient.Rotation = -90
+                end
+                if objs.HealthText.Visible then
+                    objs.HealthText.Position = UDim2.new(0, Pos.X - w / 2 - 20, 0, Pos.Y - h / 2 + h * (1 - Utility.ESP.Players[plr].health) + 3)
+                    objs.HealthText.Text = tostring(math.floor(Utility.ESP.Players[plr].health * 100))
+                    objs.HealthText.TextSize = Settings.TextSize
+                    if Settings.Healthbar.Lerp then
+                        objs.HealthText.TextColor3 = Lerp(Settings.Healthbar.DyingColor,Settings.Healthbar.HealthyColor,Utility.ESP.Players[plr].health)
+                    else
+                        objs.HealthText.TextColor3 = (isvisible and Settings.VisibleCheckRGB) or (isfriend and Settings.FriendcheckRGB) or Settings.Healthbar.HealthTextRGB
+                    end
+                end
+            end
+        end
+        do -- Names
+            objs.Name.Visible = Settings.Names.Enabled
+            objs.NameGradient.Enabled = Settings.Names.Enabled
+            objs.NameGradient.Parent = objs.Name
+            objs.NameGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,forcecolor or (Settings.Names.Rainbow and rgb2) or Settings.Names.Gradient1), ColorSequenceKeypoint.new(1,forcecolor or (Settings.Names.Rainbow and rgb3) or Settings.Names.Gradient2)}
+            if Settings.Names.Animate then
+                objs.NameGradient.Rotation = RotationAngle * Settings.Boxes.RotationSpeed
+            else
+                objs.NameGradient.Rotation = -90
+            end
+            if objs.Name.Visible then
+                objs.Name.Text = '['..plr.Name..']'
+                objs.Name.TextColor3 = (isfriend and Settings.FriendcheckRGB) or (isvisible and Settings.VisibleCheckRGB) or Settings.Names.RGB
+                objs.Name.TextSize = Settings.TextSize
+                objs.Name.Position = UDim2.new(0, Pos.X, 0, Pos.Y - h / 2 - 9)
+            end
+        end
+        do -- Distance / Weapon
+            objs.Distance.Visible,objs.Weapon.Visible = Settings.Distances.Enabled,Settings.Weapons.Enabled
+            objs.DistanceGradient.Enabled = Settings.Distances.Enabled
+            objs.DistanceGradient.Parent = objs.Distance
+            objs.DistanceGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,forcecolor or (Settings.Distances.Rainbow and rgb2) or Settings.Distances.Gradient1), ColorSequenceKeypoint.new(1,forcecolor or (Settings.Distances.Rainbow and rgb3) or Settings.Distances.Gradient2)}
+            if Settings.Distances.Animate then
+                objs.DistanceGradient.Rotation = RotationAngle * Settings.Boxes.RotationSpeed
+            else
+                objs.DistanceGradient.Rotation = -90
+            end
+            objs.WeaponGradient.Enabled = Settings.Weapons.Enabled
+            objs.WeaponGradient.Parent = objs.Weapon
+            objs.WeaponGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,forcecolor or (Settings.Weapons.Rainbow and rgb2) or Settings.Weapons.Gradient1), ColorSequenceKeypoint.new(1,forcecolor or (Settings.Weapons.Rainbow and rgb3) or Settings.Weapons.Gradient2)}
+            if Settings.Weapons.Animate then
+                objs.WeaponGradient.Rotation = RotationAngle * Settings.Boxes.RotationSpeed
+            else
+                objs.WeaponGradient.Rotation = -90
+            end
+            if objs.Distance.Visible then
+                objs.Distance.Text = '['..tostring(math.floor(Dist))..'m]'
+                objs.Distance.TextSize = Settings.TextSize
+                objs.Distance.TextColor3 = (isfriend and Settings.FriendcheckRGB) or (isvisible and Settings.VisibleCheckRGB) or Settings.Distances.RGB
+                objs.Distance.Visible = true
+                objs.Distance.Position = UDim2.new(0, Pos.X, 0, Pos.Y + h / 2 + 8 + ((Settings.Weapons.Enabled and 12) or 0))
+            end
+            if objs.Weapon.Visible then
+                objs.Weapon.Position = UDim2.new(0, Pos.X, 0, Pos.Y + h / 2 + 8)
+                objs.Weapon.TextColor3 = (isfriend and Settings.FriendcheckRGB) or (isvisible and Settings.VisibleCheckRGB) or Settings.Weapons.WeaponTextRGB
+                objs.Weapon.TextSize = Settings.TextSize
+                objs.Weapon.Text = '['..Utility.ESP.GetTool(Character)..']'
+            end
+        end
+    end
+end)
+
+-----------------------------------//LOOPS//----------------------------------------------bro idk how to loop better but im not making these shit into renderstep for performance sorry if these loops are shit
+
+Utility.CreateLoop(.1,function()
+    task.spawn(function()
+        Utility.ESP.UpdateVisual()
+        if flags['custom id'] then
+            CustomSoundID = getgenv().getcustomasset('Northern/hit sounds/'..flags['custom id'],true)
+        end
+        local holder = Utility.FindChild(camera,'local desync')
+        if holder then holder:Destroy() end
+        if not lp.Character or not flags['desync'] or not flags['desync bind'] or not flags['desync visual'] then return end
+        lp.Character.Archivable = true
+        local anotherme = lp.Character:Clone()
+        anotherme.Name = 'local desync'
+        anotherme.Humanoid.DisplayName = ' '
+        anotherme.Parent = camera
+        local head = Utility.FindChild(anotherme,'Head')
+        head.CanCollide = false
+        local hl = Instance.new('Highlight',anotherme)
+        hl.Adornee = anotherme
+        hl.FillColor = flags['desync color'].Color
+        hl.FillTransparency = flags['desync color'].Transparency
+        hl.OutlineColor = flags['desync o color'].Color
+        hl.OutlineTransparency = flags['desync o color'].Transparency
+    end)
+    if flags['inf cash'] then
+        lp.Cash.Value = 66666
+    end
+    if flags['world skybox'] and flags['world skyboxtype'] then Utility.Misc.UpdateSkybox(flags['world skyboxtype']) end
+    if ws["Status"]["RoundOver"].Value or ws.Status.Preparation.Value or #plrs:GetPlayers() <= 1 or not (flags['a shoot'] and flags['rage bind']) or not flags['part'] or typeof(client.gun) ~= "Instance" or client.gun.Name == "C4" then
+        return ftfolder:ClearAllChildren()
+    end
+end)
+
+Utility.CreateLoop(.25,function()
+    if not flags['annoy'] or not pcall(function() return lp.Character.Head end) then return end
+    local event = RS.Events.ReplicateSound
+    task.spawn(function()
+        event:FireServer(lp.Character.Head.bass,nil,nil,nil,nil)
+    end)
+    task.spawn(function()
+        event:FireServer(lp.Character.Head.Died,nil,nil,nil,nil)
+    end)
+end)
+
+Utility.CreateLoop(1/30,function()
+    if (flags['thirdp'] and flags['third bind']) then
+        lp.CameraMaxZoomDistance = flags['third dist']
+        lp.CameraMinZoomDistance = flags['third dist']
+    else
+        lp.CameraMaxZoomDistance = 0
+        lp.CameraMinZoomDistance = 0
+    end
+    Utility.Misc.Viewmodel()
+    Utility.Misc.AntiAim()
+    if flags['bhop'] and uis:IsKeyDown(Enum.KeyCode.Space) then
+        pcall(function()
+            lp.Character.Humanoid.Jump = true
+        end)
+    end
+end)
+
+Utility.CreateLoop(0.01,function()
+    if not flags['vote'] then return end
+    for _,v in next,plrs:GetPlayers() do
+        if v == lp then continue end
+        RS.Events.Vote:FireServer(v.Name,false,nil,nil,nil,nil)
+        task.wait(.05)break
+    end
+end)
+
+task.spawn(function()
+    while true do
+        Utility.Combat.Ragebot()
+        task.wait(.5)
+    end
+end)
+
+Utility.CreateLoop(3,Utility.ESP.UpdateVisual)
